@@ -1,0 +1,32 @@
+good practices
+code
+
+    Commenting and Documentation
+    Consistent Indentation
+    Avoid Obvious Comments
+    Code Grouping
+    Consistent Naming Scheme
+        camelCase
+        under_scores
+    DRY (Don't Repeat Yourself) or DIE (Duplication is Evil) principle
+    KISS (Keep It Simple Stupid)
+    YAGNI (You Aren’t Gonna Need It)
+    SOC (Separation of Concerns)
+    Avoid Deep Nesting
+    Handling errors
+    Limit Line Length
+    File and Folder Organization
+    Consistent Temporary Names
+    Separation of Code and Data
+    Code Refactoring
+
+Go
+
+    Go
+    gofmt
+    goimports
+    foimports vs gofmt
+
+CSS
+
+    CSS
