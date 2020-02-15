@@ -19,7 +19,8 @@ func createASCII(w http.ResponseWriter, req *http.Request) {
 	text := queries.Get("text")
 	format := queries.Get("format")
 	if text == "" || format == "" {
-		fmt.Fprintf(w, "Нормально данные вводи, ушлепок")
+		w.WriteHeader(400)
+		fmt.Fprintf(w, "Нормально данные вводи")
 		return
 	}
 

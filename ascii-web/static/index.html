@@ -41,7 +41,10 @@
                     },
                     success: function (result) {
                         $("#art").html(result)
-                    }
+                    },
+                    error: function(e) {
+                        $("#art").html(e.responseText)
+                    },
                 }
             )
         }
