@@ -1,0 +1,7 @@
+version: "3"
+services:
+  ascii-web:
+    build: .
+    restart: on-failure 
+    ports:
+    - 5000:8080
