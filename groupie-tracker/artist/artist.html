@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{.Name}}</title>
+</head>
+<body>
+    <h1>{{.Name}}</h1>
+    <div id = "artist_image">
+        <img src="{{.Image}}" alt="Avatar" width="600" height="600px">
+    </div>
+    </br>
+    <div id = "artist_members">
+        Members: 
+        {{range $index,$element := .Members}}
+             {{if $index}},{{end}}
+             {{$element}}
+        {{end}}
+    </div>
+    <script type="text/javascript">
+    </script>
+</body>
+</html>
