@@ -1,24 +1,40 @@
 <!doctype html>
 <html>
+{{$artist := .Artist}}
+{{$relations := .Relations}}
 
 <head>
     <meta charset="utf-8">
-    <title>{{.Name}}</title>
+    <title>{{$artist.Name}}</title>
 </head>
 <body>
-    <h1>{{.Name}}</h1>
-    <div id = "artist_image">
-        <img src="{{.Image}}" alt="Avatar" width="600" height="600px">
+    <h1>{{$artist.Name}}</h1>
+    <div id = "artist_image" align = "center">
+        <img src="{{$artist.Image}}" alt="Avatar" width="300px" height="300px">
     </div>
     </br>
     <div id = "artist_members">
-        Members: 
-        {{range $index,$element := .Members}}
+        <b>Members:</b> 
+        {{range $index,$element := $artist.Members}}
              {{if $index}},{{end}}
              {{$element}}
         {{end}}
     </div>
-    <script type="text/javascript">
-    </script>
+    <div id = "artist_first_album">
+        <b>First album:</b> {{$artist.FirstAlbum}}
+    </div>
+    </br>
+    </br>
+    <div id = "locations">
+        <b>Concerts:</b></br>
+        {{range $key,$values := $relations.DatesLocations}}
+             {{$key}}:</br>
+             <ul>
+                {{range $index, $value := $values}} 
+                    <li>{{$value}}</li>
+                {{end}}
+             </ul>
+        {{end}}
+    </div>
 </body>
 </html>

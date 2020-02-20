@@ -15,12 +15,16 @@
 </style>
 
 {{range .Artists}}
-  <div class="card" id="{{.ID}}" href="./{{.ID}}">
+
+  <div class="card" id="{{.ID}}">
     <h2>{{.Name}}</h2>
-    <img src="{{.Image}}" alt="Avatar" width="200px" height="200px">
+    <a href="./artist?id={{.ID}}">
+      <img src="{{.Image}}" alt="Avatar" width="200px" height="200px">
+    </a>
     <div class="container">
       <p>{{.CreationDate}}</p>
     </div>
   </div>
+
 {{end}}
 

@@ -12,8 +12,19 @@ type Artists struct {
 	Artists []Artist
 }
 
+func UnmarshalArtist(data []byte) (Artist, error) {
+	var r Artist
+	err := json.Unmarshal(data, &r)
+	return r, err
+}
 func UnmarshalArtists(data []byte) ([]Artist, error) {
 	var r []Artist
+	err := json.Unmarshal(data, &r)
+	return r, err
+}
+
+func UnmarshalRelations(data []byte) (Relations, error) {
+	var r Relations
 	err := json.Unmarshal(data, &r)
 	return r, err
 }
@@ -34,19 +45,40 @@ type Artist struct {
 	Relations    string   `json:"relations"`
 }
 
-func UnmarshalArtist(data []byte) (Artist, error) {
-	var r Artist
-	err := json.Unmarshal(data, &r)
-	return r, err
+type ArtistTemplate struct {
+	Artist    Artist
+	Relations Relations
+}
+
+type Relations struct {
+	ID             int64               `json:"id"`
+	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
 func HandleArtist(w http.ResponseWriter, req *http.Request) {
 	id := req.URL.Query().Get("id")
 	artist := getArtist(id)
+	relations := getRelations(id)
+	var intoTemplate ArtistTemplate = ArtistTemplate{Artist: artist, Relations: relations}
 	tmpl := template.Must(template.ParseFiles("./artist/artist.html"))
-	tmpl.Execute(w, artist)
+	tmpl.Execute(w, intoTemplate)
 }
-
+func getRelations(id string) Relations {
+	url := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/relation/%s", id)
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	relations, err := UnmarshalRelations(body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return relations
+}
 func getArtist(id string) Artist {
 	url := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/artists/%s", id)
 	resp, err := http.Get(url)
@@ -63,20 +95,12 @@ func getArtist(id string) Artist {
 	}
 	return artist
 }
+
 func HandleArtists(w http.ResponseWriter, req *http.Request) {
 	artists := getArtists()
 	a := Artists{Artists: artists}
 	tmpl := template.Must(template.ParseFiles("./artist/artists.html"))
 	tmpl.Execute(w, a)
-	// w.Header().Set("Content-Type", "text/html")
-
-	// body, err := artists.Marshal()
-	// // if err != nil {
-	// // 	w.WriteHeader(400)
-	// // 	fmt.Fprintf(w, "Нормально данные вводи, sumelek")
-	// // }
-	// w.Write(body)
-
 }
 
 func getArtists() []Artist {
