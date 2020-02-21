@@ -1,0 +1,30 @@
+<style>
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: 200px;
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .container {
+    padding: 2px 16px;
+  }
+</style>
+
+{{range .Artists}}
+
+  <div class="card" id="{{.ID}}">
+    <h2>{{.Name}}</h2>
+    <a href="./artist?id={{.ID}}">
+      <img src="{{.Image}}" alt="Avatar" width="200px" height="200px">
+    </a>
+    <div class="container">
+      <p>{{.CreationDate}}</p>
+    </div>
+  </div>
+
+{{end}}
+

@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <script src="jquery.min.js"></script>
+    <meta charset="utf-8">
+    <title>Groupie Tracker</title>
+</head>
+<style>
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      transition: 0.3s;
+      width: 40%;
+    }
+    
+    .card:hover {
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+    
+    .container {
+      padding: 2px 16px;
+    }
+    </style>
+<body>
+    
+    <label for="created_date_filter">Creation date filter:</label>
+    <input type="number" id="cr_date_from" name="created_date_filter">
+    <input type="number" id="cr_date_to" name="created_date_filter"><br><br>
+
+    <label for="first_album_filter">First Album filter:</label>
+    <input type="number" id="fa_date_from" name="first_album_filter">
+    <input type="number" id="fa_date_to" name="first_album_filter"><br><br> 
+
+    <button class = "groupie_tracker" id="artists">Get artists</button>
+    <div>
+        <pre id="error">
+
+        </pre>
+    </div>
+    <div id = "artists_wrapper">
+
+    </div>
+
+
+    <script type="text/javascript">
+
+        function handle_artists(artists) {
+            $('#artists_wrapper').html(artists)
+        }
+        function sendRequest() {
+            let cr_date_from = document.getElementById("cr_date_from").value;
+            let cr_date_to = document.getElementById("cr_date_to").value;
+            let fa_date_from = document.getElementById("fa_date_from").value;
+            let fa_date_to = document.getElementById("fa_date_to").value;                        
+            id = this.id
+            if (id == "artists") {
+                
+                $.ajax(
+                    {
+                        url: `./${id}`,
+                        data: {
+                            cr_date_from: cr_date_from,
+                            cr_date_to: cr_date_to,
+                            fa_date_from: fa_date_from,
+                            fa_date_to: fa_date_to                            
+                        },                        
+                        success: function (artists) {
+                            handle_artists(artists)
+                        },
+                        error: function(e) {
+                            $("#error").html(e.responseText)
+                        },
+                    }
+                )
+            } else {
+            }
+
+        }
+
+        $(document).ready(function () {
+            $(".groupie_tracker").click(sendRequest)
+        });
+
+        // function createArt() {
+        //     document.getElementById("art").innerHTML = "Hello MotherFucker";
+        // }
+    </script>
+</body>
+</html>
