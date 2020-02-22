@@ -4,6 +4,9 @@
 <head>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <script src="jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <meta charset="utf-8">
     <title>Groupie Tracker</title>
 </head>
@@ -30,9 +33,20 @@
 
     <label for="first_album_filter">First Album filter:</label>
     <input type="number" id="fa_date_from" name="first_album_filter">
-    <input type="number" id="fa_date_to" name="first_album_filter"><br><br> 
+    <input type="number" id="fa_date_to" name="first_album_filter"><br><br>
 
+    <label for="single_or_not_single">Single artist band?</label>
+    <input type="checkbox" id="singularity" name="single_or_not_single"><br><br>
+    <div class="ui-widget">
+        <label for="countries">Countries: </label>
+        <input id="countries">
+    </div>
+    </br>
     <button class = "groupie_tracker" id="artists">Get artists</button>
+
+
+
+
     <div>
         <pre id="error">
 
@@ -44,6 +58,64 @@
 
 
     <script type="text/javascript">
+        $(function() {
+            var availableTags = [
+                "austria",
+                "italy",
+                "philippine",
+                "greece",
+                "taiwan",
+                "netherlands_antilles",
+                "new_caledonia",
+                "belgium",
+                "france",
+                "peru",
+                "sweden",
+                "portugal",
+                "colombia",
+                "denmark",
+                "netherlands",
+                "ireland",
+                "new_zealand",
+                "switzerland",
+                "brasil",
+                "poland",
+                "chile",
+                "saudi_arabia",
+                "french_polynesia",
+                "qatar",
+                "spain",
+                "india",
+                "philippines",
+                "usa",
+                "slovakia",
+                "romania",
+                "canada",
+                "thailand",
+                "costa_rica",
+                "united_arab_emirates",
+                "finland",
+                "australia",
+                "belarus",
+                "czech_republic",
+                "us",
+                "norway",
+                "korea",
+                "japan",
+                "uk",
+                "hungary",
+                "brazil",
+                "argentina",
+                "germany",
+                "china",
+                "mexico",
+                "indonesia"
+            ];
+            $("#countries").autocomplete({source: availableTags});
+        });
+
+
+
 
         function handle_artists(artists) {
             $('#artists_wrapper').html(artists)
@@ -52,7 +124,10 @@
             let cr_date_from = document.getElementById("cr_date_from").value;
             let cr_date_to = document.getElementById("cr_date_to").value;
             let fa_date_from = document.getElementById("fa_date_from").value;
-            let fa_date_to = document.getElementById("fa_date_to").value;                        
+            let fa_date_to = document.getElementById("fa_date_to").value;
+            let checkbox = document.getElementById("singularity").checked;
+            let country =  document.getElementById("countries").value;                      
+            console.log(country)
             id = this.id
             if (id == "artists") {
                 
@@ -63,7 +138,9 @@
                             cr_date_from: cr_date_from,
                             cr_date_to: cr_date_to,
                             fa_date_from: fa_date_from,
-                            fa_date_to: fa_date_to                            
+                            fa_date_to: fa_date_to,
+                            single:checkbox,
+                            country: country                            
                         },                        
                         success: function (artists) {
                             handle_artists(artists)

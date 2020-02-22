@@ -38,3 +38,22 @@ func split(str, charset string) []string {
 
 	return res
 }
+
+// 		/////////////////////////////////////////////////////////////////
+// 		locations := getLocations(strconv.Itoa(int(artist.ID))).Locations
+// 		var countries []string
+// 		for _, location := range locations {
+// 			countries = append(countries, split(location, "-")[1])
+// 		}
+// 		for _, country := range countries {
+// 			if !set[country] {
+// 				set[country] = true
+// 			}
+// 		}
+// 		fmt.Println(countries)
+
+// 		/////////////////////////////////////////////////////////////////
+
+// for k := range set { // Loop
+// 	fmt.Println(k)
+// }
