@@ -10,41 +10,117 @@ import (
 )
 
 func main() {
-	// numberOfAnts := numberOfAnts()
-	// lines := readLines()
-	numberOfAnts := 25
-	lines := []string{
-		"##start",
-		"1 23 3",
-		"2 16 7",
-		"#comment",
-		"3 16 3",
-		"4 16 5",
-		"5 9 3",
-		"6 1 5",
-		"7 4 8",
-		"##end",
-		"0 9 5",
-		"0-4",
-		"0-6",
-		"1-3",
-		"4-3",
-		"5-2",
-		"3-5",
-		"#another comment",
-		"4-2",
-		"2-1",
-		"7-6",
-		"7-2",
-		"7-4",
-		"6-5",
+	numberOfAnts := numberOfAnts()
+	lines := readLines()
+	// numberOfAnts := 1000
+	// lines := []string{
+	// 	"##start",
+	// 	"1 23 3",
+	// 	"2 16 7",
+	// 	"#comment",
+	// 	"3 16 3",
+	// 	"4 16 5",
+	// 	"5 9 3",
+	// 	"6 1 5",
+	// 	"7 4 8",
+	// 	"##end",
+	// 	"0 9 5",
+	// 	"8 25 25",
+	// 	"9 30 30",
+	// 	"10 35 35",
+	// 	"11 40 40",
+	// 	"12 45 45",
+	// 	"0-4",
+	// 	"0-6",
+	// 	"1-3",
+	// 	"4-3",
+	// 	"5-2",
+	// 	"3-5",
+	// 	"#another comment",
+	// 	"4-2",
+	// 	"2-1",
+	// 	"7-6",
+	// 	"7-2",
+	// 	"7-4",
+	// 	"6-5",
+	// 	"1-8",
+	// 	"8-9",
+	// 	"9-10",
+	// 	"10-11",
+	// 	"11-12",
+	// 	"12-0",
+	// }
+	mapOfNodes, startNode, endNode := parseLines(lines)
+	var paths [][]string
+	for range startNode.Neighbors {
+		paths = append(paths, reverse(s.Solver(startNode, endNode, mapOfNodes))[1:])
+
 	}
-	_, startNode, endNode := parseLines(lines)
-	fmt.Println(numberOfAnts, startNode, endNode)
-	s.Solver(numberOfAnts, startNode, endNode)
+
+	lemin(numberOfAnts, paths, mapOfNodes)
 
 }
 
+func minLen(p [][]string, ants [][]int) int {
+	min := int(^uint(0) >> 1)
+	for i := range p {
+		if min > len(p[i])+len(ants[i]) {
+			min = len(p[i]) + len(ants[i])
+		}
+	}
+	return min
+}
+
+func MaxLen(p [][]string, ants [][]int) int {
+	min := 0
+	for i := range p {
+		if min < len(p[i])+len(ants[i]) {
+			min = len(p[i]) + len(ants[i])
+		}
+	}
+	return min
+}
+
+func lemin(n int, p [][]string, m map[string]*s.Node) {
+	var antQueues [][]int = make([][]int, len(p)) //list.List = make([]list.List, len(p))
+	i := 1
+	min := minLen(p, antQueues)
+
+	for i <= n {
+		for k := 0; k < len(p); k++ {
+			if len(p[k])+len(antQueues[k]) <= min {
+				antQueues[k] = append(antQueues[k], i)
+				min = minLen(p, antQueues)
+				break
+			}
+		}
+
+		i++
+	}
+	max := MaxLen(p, antQueues)
+	var solution [][]string = make([][]string, max-1)
+	for i := 0; i < len(p); i++ {
+		for j, v := range antQueues[i] {
+			for k, w := range p[i] {
+				str := fmt.Sprintf("L%d-%s", v, w)
+				solution[k+j] = append(solution[k+j], str)
+			}
+		}
+	}
+
+	for _, v := range solution {
+		for _, w := range v {
+			fmt.Printf("%s ", w)
+		}
+		fmt.Println()
+	}
+}
+func reverse(nodes []string) []string {
+	for i, j := 0, len(nodes)-1; i < j; i, j = i+1, j-1 {
+		nodes[i], nodes[j] = nodes[j], nodes[i]
+	}
+	return nodes
+}
 func abortOnError(err error) {
 	if err != nil {
 		fmt.Println(err)
@@ -126,7 +202,6 @@ func createLinks(n map[string]*s.Node, links [][]string) {
 			var err error = fmt.Errorf("unknown room")
 			abortOnError(err)
 		}
-
 		if node1 == node2 {
 			var err error = fmt.Errorf("self linkage")
 			abortOnError(err)
