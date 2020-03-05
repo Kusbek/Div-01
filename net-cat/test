@@ -1,0 +1,109 @@
+package main
+
+import (
+	"bufio"
+	"flag"
+	"fmt"
+	"io"
+	"log"
+	"net"
+	"os"
+)
+
+var (
+	listen = flag.Bool("l", false, "Listen")
+	host   = flag.String("h", "localhost", "Host")
+	port   = flag.Int("p", 0, "Port")
+)
+
+func main() {
+
+	// startServer()
+	client := NewClient()
+	client.Dial(fmt.Sprintf("%s:%s", "127.0.0.1", "8989"))
+	client.Start()
+}
+
+type client struct {
+	conn net.Conn
+	name string
+}
+
+func startServer() {
+	addr := fmt.Sprintf("%s:%d", "127.0.0.1", 8989)
+	listener, err := net.Listen("tcp", addr)
+
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("Listening for connections on %s", listener.Addr().String())
+
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			log.Printf("Error accepting connection from client: %s", err)
+		} else {
+			threeWayHandshake(conn)
+			// go processClient(conn)
+		}
+	}
+}
+
+func threeWayHandshake(conn net.Conn) {
+	conn.Write([]byte("Atyndy jaz, sumelek: "))
+	reader := *bufio.NewReader(conn)
+	nickname, _ := reader.ReadString('\n')
+	log.Printf("Hello: %s", nickname)
+}
+
+func processClient(conn net.Conn) {
+	_, err := io.Copy(os.Stdout, conn)
+	if err != nil {
+		fmt.Println(err)
+	}
+	conn.Close()
+}
+
+type TcpClient struct {
+	conn   net.Conn
+	reader *bufio.Reader
+	writer io.Writer
+}
+
+func NewClient() *TcpClient {
+	return &TcpClient{}
+}
+
+func (c *TcpClient) Dial(addr string) {
+	conn, err := net.Dial("tcp", addr)
+	if err != nil {
+		fmt.Printf("Can't connect to server: %s\n", err)
+		return
+	}
+	c.conn = conn
+	c.reader = bufio.NewReader(conn)
+	c.writer = conn
+}
+
+func (c *TcpClient) Start() {
+	// reader := bufio.NewReader(os.Stdin)
+	// for {
+	// 	output, err := c.reader.ReadString('\n')
+	// 	// input, err := reader.ReadString('\n')
+	// 	if err == io.EOF {
+	// 		break
+	// 	} else if err != nil {
+	// 		log.Printf("Read error %v", err)
+	// 	} else if output != "" {
+	// 		os.Stdout.Write([]byte(output))
+	// 	}else if input != "" {
+	// 		c.writer.Write([]byte(input))
+	// 	}
+	// }
+
+	for {
+		// _, _ = io.Copy(c.conn, os.Stdin)
+		_,_ = io.Copy(os.Stdout, c.conn)
+	}
+}
