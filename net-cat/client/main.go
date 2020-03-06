@@ -33,7 +33,6 @@ func Dial() net.Conn {
 	message, _ := bufio.NewReader(c).ReadString('$')
 	message = strings.TrimSuffix(message, "$")
 	fmt.Fprintf(os.Stdout, message+" ")
-
 	name, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	fmt.Fprintf(c, name)
 	return c
@@ -43,7 +42,6 @@ func listenServer(c *net.Conn, wg *sync.WaitGroup) {
 	defer wg.Done()
 	serverReader := bufio.NewReader(*c)
 	for {
-		fmt.Println("Listen Sever")
 		message, err := serverReader.ReadString('\n')
 		if err != nil && err == io.EOF {
 			fmt.Printf("detected closed LAN connection")
@@ -57,7 +55,6 @@ func listenClient(c *net.Conn, wg *sync.WaitGroup) {
 	defer wg.Done()
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Listen Client")
 		text, _ := reader.ReadString('\n')
 		fmt.Fprintf(*c, text)
 	}
