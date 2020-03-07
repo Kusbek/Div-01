@@ -1,18 +1,19 @@
 package main
 
 import (
-	s "DIV-01/lem-in/solver"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	s "./solver"
 )
 
 func main() {
 	numberOfAnts := numberOfAnts()
 	lines := readLines()
-	// numberOfAnts := 1000
+	// numberOfAnts := 5
 	// lines := []string{
 	// 	"##start",
 	// 	"1 23 3",
@@ -50,11 +51,30 @@ func main() {
 	// 	"11-12",
 	// 	"12-0",
 	// }
+	if numberOfAnts < 1 {
+		var err error = fmt.Errorf("number of ants is invalid")
+		abortOnError(err)
+	}
 	mapOfNodes, startNode, endNode := parseLines(lines)
+	for _, v := range mapOfNodes[startNode.Name].Neighbors {
+		if endNode == v {
+			for i := 1; i <= numberOfAnts; i++ {
+				fmt.Printf("L%d-%s ", i, endNode.Name)
+			}
+			fmt.Println()
+			return
+		}
+	}
 	var paths [][]string
 	for range startNode.Neighbors {
-		paths = append(paths, reverse(s.Solver(startNode, endNode, mapOfNodes))[1:])
-
+		extractedPaths := reverse(s.Solver(startNode, endNode, mapOfNodes))[1:]
+		if len(extractedPaths) > 1 {
+			paths = append(paths, extractedPaths)
+		}
+	}
+	if len(paths) == 0 {
+		var err error = fmt.Errorf("No paths")
+		abortOnError(err)
 	}
 
 	lemin(numberOfAnts, paths, mapOfNodes)
@@ -97,9 +117,11 @@ func lemin(n int, p [][]string, m map[string]*s.Node) {
 
 		i++
 	}
+
 	max := MaxLen(p, antQueues)
 	var solution [][]string = make([][]string, max-1)
 	for i := 0; i < len(p); i++ {
+
 		for j, v := range antQueues[i] {
 			for k, w := range p[i] {
 				str := fmt.Sprintf("L%d-%s", v, w)

@@ -48,13 +48,18 @@ func extractPath(l map[string]string, n map[string]*Node, start, end *Node) []st
 	name := end.Name
 	var result []string
 	result = append(result, name)
+	ok := false
 	for name != start.Name {
-		name = l[name]
+		name, ok = l[name]
+		if !ok {
+			return result
+		}
 		if name != start.Name && name != end.Name {
 			n[name].Used = true
 		}
 		result = append(result, name)
 	}
+
 	return result
 }
 
