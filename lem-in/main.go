@@ -1,61 +1,32 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	s "DIV-01/lem-in/solver"
 )
 
 func main() {
-	numberOfAnts := numberOfAnts()
-	lines := readLines()
-	// numberOfAnts := 5
-	// lines := []string{
-	// 	"##start",
-	// 	"1 23 3",
-	// 	"2 16 7",
-	// 	"#comment",
-	// 	"3 16 3",
-	// 	"4 16 5",
-	// 	"5 9 3",
-	// 	"6 1 5",
-	// 	"7 4 8",
-	// 	"##end",
-	// 	"0 9 5",
-	// 	"8 25 25",
-	// 	"9 30 30",
-	// 	"10 35 35",
-	// 	"11 40 40",
-	// 	"12 45 45",
-	// 	"0-4",
-	// 	"0-6",
-	// 	"1-3",
-	// 	"4-3",
-	// 	"5-2",
-	// 	"3-5",
-	// 	"#another comment",
-	// 	"4-2",
-	// 	"2-1",
-	// 	"7-6",
-	// 	"7-2",
-	// 	"7-4",
-	// 	"6-5",
-	// 	"1-8",
-	// 	"8-9",
-	// 	"9-10",
-	// 	"10-11",
-	// 	"11-12",
-	// 	"12-0",
-	// }
+	args := os.Args[1:]
+	if len(args) != 1 {
+		return
+	}
+	filename := args[0]
+
+	numberOfAnts, lines := readLines(filename)
 	if numberOfAnts < 1 {
 		var err error = fmt.Errorf("number of ants is invalid")
 		abortOnError(err)
 	}
+	start := time.Now()
 	mapOfNodes, startNode, endNode := parseLines(lines)
+
 	for _, v := range mapOfNodes[startNode.Name].Neighbors {
 		if endNode == v {
 			for i := 1; i <= numberOfAnts; i++ {
@@ -72,6 +43,8 @@ func main() {
 		paths[i] = path[1:]
 	}
 	lemin(numberOfAnts, paths, mapOfNodes)
+	elapsed := time.Since(start)
+	log.Printf("took %s", elapsed)
 }
 
 func allocatePaths(paths [][]string, startNode *s.Node, mapOfNodes map[string]*s.Node) [][]string {
@@ -104,7 +77,9 @@ func allocatePaths(paths [][]string, startNode *s.Node, mapOfNodes map[string]*s
 		for _, vv := range v {
 			tempmin += len(vv)
 		}
+
 		if tempmin < min {
+			min = tempmin
 			res = v
 		}
 	}
@@ -323,26 +298,14 @@ func createLinks(n map[string]*s.Node, links [][]string) {
 	}
 }
 
-func numberOfAnts() int {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	number, err := strconv.Atoi(scanner.Text())
-	abortOnError(err)
-	return number
-}
-func readLines() []string {
-	scanner := bufio.NewScanner(os.Stdin)
-	var lines []string
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "" {
-			break
-		}
-		lines = append(lines, line)
-
+func readLines(file string) (int, []string) {
+	bytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	err := scanner.Err()
+	lines := strings.Split(string(bytes), "\n")
+	n, err := strconv.Atoi(lines[0])
 	abortOnError(err)
-
-	return lines
+	return n, lines[1:]
 }
