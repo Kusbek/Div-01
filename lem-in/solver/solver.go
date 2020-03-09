@@ -14,7 +14,7 @@ type Node struct {
 	Neighbors []*Node
 }
 
-func Solver(start, end *Node, n map[string]*Node) []string {
+func BFS(start, end *Node, n map[string]*Node) []string {
 	q := list.New()
 	q.PushBack(start)
 	start.Visited = true
@@ -32,10 +32,10 @@ func Solver(start, end *Node, n map[string]*Node) []string {
 		q.Remove(e)
 	}
 	path := extractPath(mapOfLinks, n, start, end)
-	clearVisited(n)
 	return path
 }
-func clearVisited(n map[string]*Node) {
+
+func ClearVisited(n map[string]*Node) {
 	for _, v := range n {
 		if !v.Used {
 			v.Visited = false
@@ -52,14 +52,10 @@ func extractPath(l map[string]string, n map[string]*Node, start, end *Node) []st
 	for name != start.Name {
 		name, ok = l[name]
 		if !ok {
-			return result
-		}
-		if name != start.Name && name != end.Name {
-			n[name].Used = true
+			return nil
 		}
 		result = append(result, name)
 	}
-
 	return result
 }
 

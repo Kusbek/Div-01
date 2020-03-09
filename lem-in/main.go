@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	s "./solver"
+	s "DIV-01/lem-in/solver"
 )
 
 func main() {
@@ -65,22 +65,112 @@ func main() {
 			return
 		}
 	}
-	var paths [][]string
-	for range startNode.Neighbors {
-		extractedPaths := reverse(s.Solver(startNode, endNode, mapOfNodes))[1:]
-		if len(extractedPaths) > 1 {
-			paths = append(paths, extractedPaths)
-		}
+	var takenPath []string
+	allPaths := Solver(takenPath, mapOfNodes, startNode, endNode)
+	paths := allocatePaths(allPaths, startNode, mapOfNodes)
+	for i, path := range paths {
+		paths[i] = path[1:]
 	}
-	if len(paths) == 0 {
-		var err error = fmt.Errorf("No paths")
-		abortOnError(err)
-	}
-
 	lemin(numberOfAnts, paths, mapOfNodes)
-
 }
 
+func allocatePaths(paths [][]string, startNode *s.Node, mapOfNodes map[string]*s.Node) [][]string {
+	var maxNPaths [][][]string = make([][][]string, len(paths))
+	for i := 0; i < len(paths); i++ {
+		maxNPaths[i] = append(maxNPaths[i], paths[i])
+		for j := i + 1; j < len(paths); j++ {
+			if norm(maxNPaths[i], paths[j]) {
+				maxNPaths[i] = append(maxNPaths[i], paths[j])
+			}
+		}
+	}
+	var result [][][]string
+	max := 0
+	for _, v := range maxNPaths {
+		if max < len(v) {
+			max = len(v)
+		}
+	}
+
+	for _, v := range maxNPaths {
+		if max == len(v) {
+			result = append(result, v)
+		}
+	}
+	var res [][]string
+	min := int(^uint(0) >> 1)
+	for _, v := range result {
+		tempmin := 0
+		for _, vv := range v {
+			tempmin += len(vv)
+		}
+		if tempmin < min {
+			res = v
+		}
+	}
+
+	return res
+}
+
+func norm(n1 [][]string, n2 []string) bool {
+	for _, v := range n1 {
+		for _, k := range v[1 : len(v)-1] {
+			for _, kk := range n2[1 : len(n2)-1] {
+				if k == kk {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func Solver(takenPath []string, mapOfNodes map[string]*s.Node, startNode, endNode *s.Node) [][]string {
+	if startNode == endNode {
+		return nil
+	}
+	extractedPath := reverse(s.BFS(startNode, endNode, mapOfNodes))
+	var fullpath []string
+	if extractedPath != nil {
+		fullpath = append(fullpath, takenPath...)
+		fullpath = append(fullpath, extractedPath...)
+	}
+	takenPath = append(takenPath, startNode.Name)
+
+	startNode.Used = true
+	s.ClearVisited(mapOfNodes)
+	var result [][]string
+	if fullpath != nil {
+		result = append(result, fullpath)
+	}
+	for _, v := range startNode.Neighbors {
+		if !v.Used {
+			paths := Solver(takenPath, mapOfNodes, v, endNode)
+			for _, path := range paths {
+				if !isEqual(fullpath, path) {
+					result = append(result, path)
+				}
+			}
+		}
+	}
+
+	startNode.Used = false
+	startNode.Visited = false
+	return result
+}
+
+func isEqual(fullpath, path []string) bool {
+	if len(fullpath) != len(path) {
+		return false
+	}
+	for i := range fullpath {
+		if fullpath[i] != path[i] {
+			return false
+		}
+	}
+
+	return true
+}
 func minLen(p [][]string, ants [][]int) int {
 	min := int(^uint(0) >> 1)
 	for i := range p {
