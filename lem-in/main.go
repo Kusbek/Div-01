@@ -25,7 +25,15 @@ func main() {
 		abortOnError(err)
 	}
 	start := time.Now()
+
 	mapOfNodes, startNode, endNode := parseLines(lines)
+
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(string(bytes), "\n")
 
 	for _, v := range mapOfNodes[startNode.Name].Neighbors {
 		if endNode == v {
@@ -43,6 +51,7 @@ func main() {
 		paths[i] = path[1:]
 	}
 	lemin(numberOfAnts, paths, mapOfNodes)
+
 	elapsed := time.Since(start)
 	log.Printf("took %s", elapsed)
 }
@@ -210,9 +219,9 @@ func reverse(nodes []string) []string {
 }
 func abortOnError(err error) {
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Normalno dannye vvodi, sumelek")
-		os.Exit(1)
+		// fmt.Println(err)
+		fmt.Println("ERROR: invalid data format")
+		os.Exit(0)
 	}
 }
 
@@ -245,10 +254,18 @@ func parseLines(lines []string) (map[string]*s.Node, *s.Node, *s.Node) {
 			if len(splitted) == 3 {
 				nodes = append(nodes, splitted)
 				if start {
+					if startNode != "" {
+						fmt.Println("ERROR: invalid data format")
+						os.Exit(0)
+					}
 					startNode = splitted[0]
 					start = false
 				}
 				if end {
+					if endNode != "" {
+						fmt.Println("ERROR: invalid data format")
+						os.Exit(0)
+					}
 					endNode = splitted[0]
 					end = false
 				}
@@ -304,6 +321,7 @@ func readLines(file string) (int, []string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	// fmt.Println(string(bytes), "\n")
 	lines := strings.Split(string(bytes), "\n")
 	n, err := strconv.Atoi(lines[0])
 	abortOnError(err)
