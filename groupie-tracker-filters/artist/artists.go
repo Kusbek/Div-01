@@ -101,13 +101,8 @@ func getArtist(id string) Artist {
 func HandleArtists(w http.ResponseWriter, req *http.Request) {
 	artists := getArtists()
 	artists = Filter(artists, req)
-	// dateFrom, dateTo := getCreatedDateFilterDates(req)
-	// fmt.Println(dateFrom, dateTo)
-	// artists = filterByCreationDate(artists, dateFrom, dateTo)
 	dateFrom, dateTo := getFirstAlbumFilterDates(req)
 	fmt.Println(dateFrom, dateTo)
-	// artists = filterByFirstAlbumDate(artists, dateFrom, dateTo)
-
 	a := Artists{Artists: artists}
 	tmpl := template.Must(template.ParseFiles("./artist/artists.html"))
 	tmpl.Execute(w, a)
