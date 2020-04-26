@@ -1,7 +1,7 @@
 package sqllite
 
 import (
-	"DIV-01/forum/common"
+	"DIV-01/new_forum/common"
 	"database/sql"
 
 	_ "github.com/mattn/go-sqlite3"
