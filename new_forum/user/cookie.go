@@ -52,6 +52,7 @@ func (c *Cookies) Insert(user *User) string {
 	c.mulock.Lock()
 	defer c.mulock.Unlock()
 	uuid := genShortUUID()
+
 	cookie := &Cookie{User: user, ExpireTime: time.Now().Add(COOKIEEXPIRETIME * time.Second)}
 	c.Cookies[uuid] = cookie
 	return uuid

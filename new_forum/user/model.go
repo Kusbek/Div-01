@@ -50,6 +50,5 @@ func GetUser(db *sql.DB, creds, password string) (*User, error) {
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, err
 	}
-
 	return user, nil
 }

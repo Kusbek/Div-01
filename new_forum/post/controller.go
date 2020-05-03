@@ -58,6 +58,7 @@ func HandleGetPosts(w http.ResponseWriter, req *http.Request) {
 		"cosplay": "cosplay",
 	}
 	category, ok := categories[req.URL.Query().Get("category")]
+
 	if !ok {
 		category = "all"
 	}

@@ -27,10 +27,8 @@ func main() {
 	http.HandleFunc("/comment", comment.HandleComments)
 
 	//Comment Handling
-	http.HandleFunc("/user/create", user.HandleUserCreate)
-	http.HandleFunc("/user/login", user.HandleUserLogin)
-
-	// fmt.Println(post.GetPosts(db, "all"))
+	http.HandleFunc("/signup", user.HandleUserCreate)
+	http.HandleFunc("/signin", user.HandleUserLogin)
 
 	http.ListenAndServe(":8080", nil)
 }
