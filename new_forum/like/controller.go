@@ -3,37 +3,45 @@ package like
 import (
 	sqlite "DIV-01/new_forum/sqlite"
 	"DIV-01/new_forum/user"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
+
+type LikeRequest struct {
+	PostID int `json:"post_id"`
+	IsLike int `json:"is_like"`
+}
 
 func HandleLikes(w http.ResponseWriter, req *http.Request) {
 	fmt.Println("Handling like")
+	l := &LikeRequest{}
+	err := json.NewDecoder(req.Body).Decode(l)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	u, err := user.Authenticate(req)
 	if err != nil {
-		w.Write([]byte("Failed to autheticate"))
-	}
-	postID, err := strconv.Atoi(req.URL.Query().Get("post_id"))
-	if err != nil {
-		w.Write([]byte("post_id should be integer"))
-	}
-	isLike, err := strconv.Atoi(req.URL.Query().Get("is_like"))
-	if err != nil {
-		w.Write([]byte("is_like should be integer"))
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
 	}
 	db := sqlite.GetDB()
 	switch req.Method {
 	case "POST":
-		if exists, like := likeExists(db, u.ID, postID); exists {
-			if isLike == like {
-				DeleteLike(db, u.ID, postID)
+		fmt.Println("HANDLING LIKE POST")
+		if exists, like := likeExists(db, u.ID, l.PostID); exists {
+			if l.IsLike == like {
+				fmt.Println("Deleting Like")
+				DeleteLike(db, u.ID, l.PostID)
 			} else {
-				UpdateLike(db, u.ID, postID, isLike)
+				fmt.Println("Updating Like")
+				UpdateLike(db, u.ID, l.PostID, l.IsLike)
 			}
 			return
 		}
-		InsertLike(db, u.ID, postID, isLike)
+		fmt.Println("Inserting Like")
+		InsertLike(db, u.ID, l.PostID, l.IsLike)
 	default:
 		w.Write([]byte("Takogo methoda net"))
 	}

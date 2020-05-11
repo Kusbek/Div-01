@@ -1,80 +1,81 @@
-<!doctype html>
-<html>
+{{range .Posts}}
+<div class="row">
 
-<head>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Rokkitt" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="../static/post.css" rel="stylesheet">
-</head>
+    <div class="col-lg-6 offset-lg-3">
 
-<body>
+        <div class="cardbox shadow-lg bg-white">
 
-    <section class="hero">
-        <div class="container">
-            {{range .Posts}}
-            <div class="row">
-
-                <div class="col-lg-6 offset-lg-3">
-    
-                    <div class="cardbox shadow-lg bg-white">
-    
-                        <div class="cardbox-heading">
-                            <!--/ dropdown -->
-                            <div class="media m-0">
-                                <div class="media-body">
-                                    <p class="m-0">{{.Author}}</p>
-                                </div>
-                            </div>
-                            <!--/ media -->
-                        </div>
-                        <!--/ cardbox-heading -->
-                        <div class="cardbox-item">
-                            <h3>{{.Title}}</h3>
-                        </div>    
-                        <div class="cardbox-item">
-                            <p>{{.Text}}</p>
-                        </div>
-                        <!--/ cardbox-item -->
-                        <div class="cardbox-base">
-                            <ul class="float-right">
-                                <li><a><i class="fa fa-comments"></i></a></li>
-                                <li><a><em class="mr-5">{{.Comments}}</em></a></li>
-                            </ul>
-                            <ul>
-                                <li><a><i class="fa fa-thumbs-up"></i></a></li>
-                                <li><a><span>{{.Likes}}</span></a></li>
-                            </ul>
-                            <ul>
-                                <li><a><i class="fa fa-thumbs-down"></i></a></li>
-                                <li><a><span>{{.Dislikes}}</span></a></li>
-                            </ul>
-                        </div>
-                        <br>
-                        <!--/ cardbox-like -->
-    
+            <div class="cardbox-heading">
+                <!--/ dropdown -->
+                <div class="media m-0">
+                    <div class="media-body">
+                        <p class="m-0">{{.Author}}</p>
                     </div>
-                    <!--/ cardbox -->
-    
                 </div>
-    
-    
+                <!--/ media -->
             </div>
-            {{end}}
+            <!--/ cardbox-heading -->
+            <div class="cardbox-item">
+                <h3>{{.Title}}</h3>
+            </div>
+            <div class="cardbox-item">
+                <p>{{.Text}}</p>
+            </div>
+            <!--/ cardbox-item -->
+            <div class="cardbox-base">
+                <ul class="float-right">
+                    <li><a><i class="fa fa-comments"></i></a></li>
+                    <li><a><em class="mr-5">{{.Comments}}</em></a></li>
+                </ul>
+                <ul>
+                    <li><a><i class="fa fa-thumbs-up" post_id="{{.ID}}" onclick="likeIt(this, 1)"></i></a>
+                    </li>
+                    <li><a><span>{{.Likes}}</span></a></li>
+                </ul>
+                <ul>
+                    <li><a><i class="fa fa-thumbs-down" post_id="{{.ID}}" onclick="likeIt(this, 0)"></i></a>
+                    </li>
+                    <li><a><span>{{.Dislikes}}</span></a></li>
+                </ul>
+            </div>
+            <br>
+            <!--/ cardbox-like -->
+
         </div>
-        <!--/ container -->
-    </section>
+        <!--/ cardbox -->
 
-</body>
+    </div>
 
-</html>
+
+</div>
+{{end}}
+
+<script>
+
+    function likeIt(elem, isLike) {
+        postId = elem.getAttribute("post_id") //console.log(elem.getAttribute("post_id"))
+        let likeBody = {
+            post_id: parseInt(postId),
+            is_like: parseInt(isLike)
+        }
+        $.ajax(
+            {
+                url: "./like",
+                type: "POST",
+                data: JSON.stringify(likeBody),
+                success: function (data, textStatus, xhr) {
+                    location.reload()
+                },
+                error: function (e) {
+                    // alert(e.status)
+                    if (e.status == 401) {
+                        window.location = "./signin";
+                    } else {
+                        alert(e.responseText)
+                    }
+
+                },
+            }
+        )
+    }
+</script>

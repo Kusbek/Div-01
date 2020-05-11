@@ -6,6 +6,7 @@ import (
 	"DIV-01/new_forum/post"
 	sqlite "DIV-01/new_forum/sqlite"
 	"DIV-01/new_forum/user"
+	"html/template"
 	"net/http"
 )
 
@@ -17,8 +18,9 @@ func main() {
 
 	user.NewCookies()
 
+	http.HandleFunc("/", HandleMain)
 	//Posts handling
-	http.HandleFunc("/", post.HandlePosts)
+	http.HandleFunc("/post", post.HandlePosts)
 
 	//Likes Handling
 	http.HandleFunc("/like", like.HandleLikes)
@@ -31,4 +33,9 @@ func main() {
 	http.HandleFunc("/signin", user.HandleUserLogin)
 
 	http.ListenAndServe(":8080", nil)
+}
+
+func HandleMain(w http.ResponseWriter, req *http.Request) {
+	tmpl := template.Must(template.ParseFiles("./static/index.html"))
+	tmpl.ExecuteTemplate(w, "index.html", nil)
 }

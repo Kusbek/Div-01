@@ -37,13 +37,10 @@ func HandleUserLogin(w http.ResponseWriter, req *http.Request) {
 	db := sqlite.GetDB()
 	switch req.Method {
 	case "GET":
-		_, err := Authenticate(req)
-		if err != nil {
-			tmpl := template.Must(template.ParseFiles("./user/web/login.html"))
-			tmpl.ExecuteTemplate(w, "login.html", nil)
-		} else {
-			http.Redirect(w, req, "/", 302)
-		}
+
+		tmpl := template.Must(template.ParseFiles("./user/web/login.html"))
+		tmpl.ExecuteTemplate(w, "login.html", nil)
+
 		// w.Write([]byte("GET methoda net"))
 	case "POST":
 		userCreds := &Credentials{}
