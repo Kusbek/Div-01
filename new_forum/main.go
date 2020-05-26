@@ -7,6 +7,7 @@ import (
 	sqlite "DIV-01/new_forum/sqlite"
 	"DIV-01/new_forum/user"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -21,7 +22,7 @@ func main() {
 	http.HandleFunc("/", HandleMain)
 	//Posts handling
 	http.HandleFunc("/post", post.HandlePosts)
-
+	http.HandleFunc("/det_post", post.HandleDetailedPosts)
 	//Likes Handling
 	http.HandleFunc("/like", like.HandleLikes)
 
@@ -32,7 +33,9 @@ func main() {
 	http.HandleFunc("/signup", user.HandleUserCreate)
 	http.HandleFunc("/signin", user.HandleUserLogin)
 
-	http.ListenAndServe(":8080", nil)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func HandleMain(w http.ResponseWriter, req *http.Request) {

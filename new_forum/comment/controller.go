@@ -11,12 +11,14 @@ import (
 
 func HandleComments(w http.ResponseWriter, req *http.Request) {
 	db := sqlite.GetDB()
-	postID, err := strconv.Atoi(req.URL.Query().Get("post_id"))
-	if err != nil {
-		w.Write([]byte("post_id should be integer"))
-	}
+
 	switch req.Method {
 	case "GET":
+		postID, err := strconv.Atoi(req.URL.Query().Get("post_id"))
+		if err != nil {
+			http.Error(w, "post_id should be integer", http.StatusBadRequest)
+			return
+		}
 		comments := GetCommentsForPost(db, postID)
 		for _, comment := range comments {
 			fmt.Println(comment)
@@ -24,7 +26,8 @@ func HandleComments(w http.ResponseWriter, req *http.Request) {
 	case "POST":
 		u, err := user.Authenticate(req)
 		if err != nil {
-			w.Write([]byte("Failed to autheticate"))
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
 		}
 		comment := &Comment{}
 		err = json.NewDecoder(req.Body).Decode(comment)
@@ -32,7 +35,7 @@ func HandleComments(w http.ResponseWriter, req *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		err = InsertComment(db, u.ID, postID, comment.Text)
+		err = InsertComment(db, u.ID, comment.PostID, comment.Text)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

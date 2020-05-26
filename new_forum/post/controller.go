@@ -1,6 +1,7 @@
 package post
 
 import (
+	"DIV-01/new_forum/comment"
 	sqlite "DIV-01/new_forum/sqlite"
 	"DIV-01/new_forum/user"
 	"encoding/json"
@@ -18,7 +19,7 @@ func HandlePosts(w http.ResponseWriter, req *http.Request) {
 	case "POST":
 		u, err := user.Authenticate(req)
 		if err != nil {
-			w.Write([]byte("Failed to autheticate"))
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 		game, err := strconv.ParseBool(req.URL.Query().Get("game"))
@@ -77,4 +78,29 @@ func HandleGetPosts(w http.ResponseWriter, req *http.Request) {
 
 	tmpl := template.Must(template.ParseFiles("./post/posts.html"))
 	tmpl.ExecuteTemplate(w, "posts.html", posts)
+}
+
+type DetailedPost struct {
+	Post     Post
+	Comments []comment.Comment
+}
+
+func HandleDetailedPosts(w http.ResponseWriter, req *http.Request) {
+	db := sqlite.GetDB()
+	switch req.Method {
+	case "GET":
+		postID, err := strconv.Atoi(req.URL.Query().Get("post_id"))
+		if err != nil {
+			http.Error(w, "post_id should be integer", http.StatusBadRequest)
+			return
+		}
+		detailedPost := &DetailedPost{
+			Post:     GetPost(db, postID),
+			Comments: comment.GetCommentsForPost(db, postID),
+		}
+		tmpl := template.Must(template.ParseFiles("./post/post.html"))
+		tmpl.ExecuteTemplate(w, "post.html", detailedPost)
+	default:
+		w.Write([]byte("Takogo methoda net"))
+	}
 }

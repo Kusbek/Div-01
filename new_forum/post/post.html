@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+
+<head>
+    <script src="../../static/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Rokkitt" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../static/post.css" rel="stylesheet">
+    <link href="../static/comment.css" rel="stylesheet">
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+
+</head>
+
+<body>
+    <div class="row">
+
+        <div class="col-lg-6 offset-lg-3">
+
+            <div class="cardbox shadow-lg bg-white">
+
+                <div class="cardbox-heading">
+                    <!--/ dropdown -->
+                    <div class="media m-0">
+                        <div class="media-body">
+                            <p class="m-0">{{.Post.Author}}</p>
+                        </div>
+                    </div>
+                    <!--/ media -->
+                </div>
+                <!--/ cardbox-heading -->
+                <div class="cardbox-item">
+                    <h3>{{.Post.Title}}</h3>
+                </div>
+                <div class="cardbox-item">
+                    <p>{{.Post.Text}}</p>
+                </div>
+
+                <!--/ cardbox-item -->
+                <div class="cardbox-base">
+                    <ul class="float-right">
+                        <li><a><i class="fa fa-comments" onclick="showCommInField(this)"></i></a>
+                        </li>
+                        <li><a><em class="mr-5">{{.Post.Comments}}</em></a></li>
+                    </ul>
+                    <ul>
+                        <li><a><i class="fa fa-thumbs-up" post_id="{{.Post.ID}}" onclick="likeIt(this, 1)"></i></a></li>
+                        <li><a><span>{{.Post.Likes}}</span></a></li>
+                    </ul>
+                    <ul>
+                        <li><a><i class="fa fa-thumbs-down" post_id="{{.Post.ID}}" onclick="likeIt(this, 0)"></i></a>
+                        </li>
+                        <li><a><span>{{.Post.Dislikes}}</span></a></li>
+                    </ul>
+                </div>
+                <br>
+                <!--/ cardbox-like -->
+
+            </div>
+            <!--/ cardbox -->
+        </div>
+    </div>
+
+    <div class = "container" id="fn" style="display:none">
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="thumbnail">
+                    <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png">
+                </div><!-- /thumbnail -->
+            </div><!-- /col-sm-1 -->
+    
+            <div class="col-sm-5">
+                <textarea class="panel-body" id="in_comment" cols ="50px"></textarea>
+                <button type="button" id="submit_comment" post_id="{{.Post.ID}}" onclick="submitComment(this)">Submit comment</button>
+            </div><!-- /col-sm-5 -->
+        </div><!-- /row -->
+    </div>
+
+    <div class="container" id="post_comments">
+        {{range .Comments}}
+        <div class="row">
+            <div class="col-sm-1">
+                <div class="thumbnail">
+                    <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png">
+                </div><!-- /thumbnail -->
+            </div><!-- /col-sm-1 -->
+    
+            <div class="col-sm-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>{{.Author}}</strong>
+                    </div>
+                    <div class="panel-body">
+                        {{.Text}}
+                    </div><!-- /panel-body -->
+                </div><!-- /panel panel-default -->
+            </div><!-- /col-sm-5 -->
+        </div><!-- /row -->
+        {{end}}
+    </div><!-- /container -->
+</body>
+<script>
+ 
+    function showCommInField(elem) {
+        postId = elem.getAttribute("post_id")
+        $("#fn").toggle();
+        
+    }
+
+    function submitComment(elem){
+        postId = elem.getAttribute("post_id")
+        text  = $("#in_comment").val()
+        let commentBody = {
+            post_id: parseInt(postId),
+            text: text
+        }
+        $.ajax(
+            {
+                url: "./comment",
+                type: "POST",
+                data: JSON.stringify(commentBody),
+                success: function (data, textStatus, xhr) {
+                    location.reload()
+                },
+                error: function (e) {
+                    // alert(e.status)
+                    if (e.status == 401) {
+                        window.location = "./signin";
+                    } else {
+                        alert(e.responseText)
+                    }
+
+                },
+            }
+        )
+    }
+
+    function likeIt(elem, isLike) {
+        postId = elem.getAttribute("post_id") //console.log(elem.getAttribute("post_id"))
+        let likeBody = {
+            post_id: parseInt(postId),
+            is_like: parseInt(isLike)
+        }
+        $.ajax(
+            {
+                url: "./like",
+                type: "POST",
+                data: JSON.stringify(likeBody),
+                success: function (data, textStatus, xhr) {
+                    location.reload()
+                },
+                error: function (e) {
+                    // alert(e.status)
+                    if (e.status == 401) {
+                        window.location = "./signin";
+                    } else {
+                        alert(e.responseText)
+                    }
+
+                },
+            }
+        )
+    }
+</script>
+
+</html>

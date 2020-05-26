@@ -7,6 +7,7 @@ import (
 
 type Comment struct {
 	ID     int    `sql:"id" json:"id,omitempty"`
+	PostID int    `json:"post_id,omitempty"`
 	Author string `sql:"username" json:"username,omitempty"`
 	Text   string `sql:"text" json:"text,omitempty"`
 }
@@ -28,7 +29,7 @@ func GetCommentsForPost(db *sql.DB, postID int) []Comment {
 
 	for rows.Next() {
 		item := Comment{}
-		err = rows.Scan(&item.ID, &item.Text, &item.Author)
+		err = rows.Scan(&item.ID, &item.Author, &item.Text)
 		common.AbortOnError(err, "Does not follow model: ")
 		result = append(result, item)
 	}
