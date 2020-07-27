@@ -8,36 +8,38 @@ export default class View {
         6: 'purple',
         7: 'red',
     }
-    constructor(element, width, height, rows, columns) {
+    constructor(element) {
         this.element = element
-        this.width = width
-        this.height = height
-        this.canvas = document.createElement('canvas')
-        this.canvas.width = this.width
-        this.canvas.height = this.height
-        this.context = this.canvas.getContext('2d')
+        this.width = 10
+        this.height = 20
+        this.gameZone = document.getElementById('gamezone')
+        this.panel = document.getElementById("panel")
+        this.menu = document.getElementById("menu")
+        this.canvas = document.getElementById("canvas")
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                let cell = document.createElement('div')
+                cell.classList.add("cell")
+                cell.setAttribute("y", y)
+                cell.setAttribute("x", x)
+                this.canvas.appendChild(cell)
+            }
+        }
 
-        this.playfieldBorderWidth = 4
-        this.playfieldX = this.playfieldBorderWidth
-        this.playfieldY = this.playfieldBorderWidth
+        this.panelNextPiece = document.getElementById("next-piece")
+        for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 4; x++) {
+                let cell = document.createElement('div')
+                cell.classList.add("cell")
+                cell.setAttribute("y", y)
+                cell.setAttribute("x", x)
+                this.panelNextPiece.appendChild(cell)
+            }
+        }        
 
-        this.playfieldWidth = this.width * 2 / 3
-        this.playfieldHeight = this.height
-        this.playfieldInnerWidth = this.playfieldWidth - this.playfieldBorderWidth * 2
-        this.playfieldInnerHeight = this.playfieldHeight - this.playfieldBorderWidth * 2
 
-        this.blockWidth = this.playfieldInnerWidth / columns
-        this.blockHeight = this.playfieldInnerHeight / rows
-        
-
-        this.panelX = this.playfieldWidth + 10
-        this.panelY = 0
-
-        this.panelWidth = this.width / 3
-        this.panelHeight = this.height
-        
-        this.element.appendChild(this.canvas)
     }
+
 
 
     renderMainScreen(state) {
@@ -47,37 +49,39 @@ export default class View {
     }
 
 
-
+    renderPauseScreen() {
+        let e = document.createElement("div")
+        e.id = 'menu-content'
+        e.textContent = "Press ENTER to Resume or R to restart"
+        this.menu.appendChild(e)
+        this.menu.style.display = "block"
+    }
 
     renderStartScreen() {
-        this.context.fillStyle = 'white'
-        this.context.font = '18px "Press Start 2p"'
-        this.context.textAlign = 'center'
-        this.context.textBaseline = 'middle'
-        this.context.fillText('Press ENTER to Start', this.width / 2, this.height /2)
+        let e = document.createElement("div")
+        e.id = 'menu-content'
+        e.textContent = 'Press ENTER to Start'
+        this.menu.appendChild(e)
+        this.menu.style.display = "block"
     }
 
-    renderPauseScreen() {
-        this.context.fillStyle = 'rgba(0,0,0,0.75)'
-        this.context.fillRect(0,0, this.width, this.height)
-        this.context.fillStyle = 'white'
-        this.context.font = '18px "Press Start 2p"'
-        this.context.textAlign = 'center'
-        this.context.textBaseline = 'middle'
-        this.context.fillText('Press ENTER to Resume', this.width / 2, this.height /2)
-    }
+
 
     renderEndScreen({score}) {
         this.clearScreen()
-        this.context.fillStyle = 'rgba(0,0,0,0.75)'
-        this.context.fillRect(0,0, this.width, this.height)
-        this.context.fillStyle = 'white'
-        this.context.font = '18px "Press Start 2p"'
-        this.context.textAlign = 'center'
-        this.context.textBaseline = 'middle'
-        this.context.fillText('GAME OVER', this.width / 2, this.height /2 - 48)
-        this.context.fillText(`Score ${score}`, this.width / 2, this.height /2 )
-        this.context.fillText(`Press ENTER to Restart`, this.width / 2, this.height /2 + 48)
+        let e = document.createElement("div")
+        e.id = 'menu-content'
+        let gameover = document.createElement("p")
+        gameover.appendChild(document.createTextNode("GAME OVER"))
+        let sc = document.createElement("p")
+        sc.appendChild(document.createTextNode(`Score ${score}`))
+        let restart = document.createElement("p")
+        restart.appendChild(document.createTextNode(`Press ENTER to Restart`))
+        e.appendChild(gameover)
+        e.appendChild(sc)
+        e.appendChild(restart)
+        this.menu.appendChild(e)
+        this.menu.style.display = "block"
     }
 
 
@@ -86,35 +90,27 @@ export default class View {
             const line = playfield[y]
             for (let x = 0; x < line.length; x++) {
                 const block = line[x]
-
                 if (block) {
                     this.renderBlock(
-                        this.playfieldX + (x * this.blockWidth),
-                        this.playfieldY + (y * this.blockHeight),
-                        this.blockWidth,
-                        this.blockHeight,
+                        x,
+                        y,
                         View.colors[block]
                     )
                 }
 
             }
         }
-
-        this.context.strokeStyle = 'white'
-        this.context.lineWidth = this.playfieldBorderWidth
-        this.context.strokeRect(0,0, this.playfieldWidth, this.playfieldHeight)
     }
 
     renderPanel({ level, score, lines, nextPiece }) {
-        this.context.textAlign = 'start'
-        this.context.textBaseline = 'top'
-        this.context.fillStyle = 'white'
-        this.context.font = '14px "Press start 2p"'
-
-        this.context.fillText(`score: ${score}`, this.panelX, this.panelY)
-        this.context.fillText(`lines: ${lines}`, this.panelX, this.panelY+24)
-        this.context.fillText(`Level: ${level}`, this.panelX, this.panelY+48)
-        this.context.fillText(`Next: `, this.panelX, this.panelY+ 96)
+        let pScore = document.getElementById("score")
+        pScore.textContent = `Score: ${score}`
+        let pLevel = document.getElementById("level")
+        pLevel.textContent = `Level: ${level}`
+        let pLines = document.getElementById("lines")
+        pLines.textContent = `Lines: ${lines}`
+        let pNext = document.getElementById("next")
+        pNext.textContent = `Next:`
 
 
         for (let y = 0; y < nextPiece.blocks.length; y++) {
@@ -122,29 +118,39 @@ export default class View {
                 const block = nextPiece.blocks[y][x]
 
                 if (block) {
-                    this.renderBlock(
-                        this.panelX + (x * this.blockWidth * 0.5),
-                        this.panelY +120 + (y * this.blockHeight * 0.5),
-                        this.blockWidth*0.5,
-                        this.blockHeight*0.5,
-                        View.colors[block]
-                    )
+                    let e = this.panelNextPiece.querySelector(`[x="${x}"][y="${y}"]`)
+                    e.classList.add('active')
+                    e.classList.add(View.colors[block])
+                    // this.renderBlock(
+                    //     this.panelX + (x * this.blockWidth * 0.5),
+                    //     this.panelY +120 + (y * this.blockHeight * 0.5),
+                    //     this.blockWidth*0.5,
+                    //     this.blockHeight*0.5,
+                    //     View.colors[block]
+                    // )
                 }
             }
         }
-
     }
 
-    renderBlock(x, y, width, height, color) {
-        this.context.fillStyle = color
-        this.context.strokeStyle = "black"
-        this.context.lineWidth = 2
-        this.context.fillRect(x, y, width, height)
-        this.context.strokeRect(x, y, width, height)
+    renderBlock(x, y, color) {
+        let e = this.canvas.querySelector(`[x="${x}"][y="${y}"]`)
+        e.classList.add('active')
+        e.classList.add(color)
     }
 
     clearScreen() {
-        this.context.clearRect(0, 0, this.width, this.height);
-    }
+        this.menu.style.display = "none"
+        let child = this.menu.lastElementChild
 
+        while (child) {
+            this.menu.removeChild(child)
+            child = this.menu.lastElementChild
+        }
+        let cells = document.getElementsByClassName('cell')
+        Array.from(cells).forEach((cell) => {
+            cell.className = ''
+            cell.classList.add('cell')
+        })
+    }
 }

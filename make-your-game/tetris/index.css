@@ -31,7 +31,7 @@ body {
 
 #panel {
     display: block;
-    background-color:rgb(0, 0, 0);
+    background-color:rgb(48, 37, 48);
     float: right;
 
     text-align: left;
@@ -39,16 +39,15 @@ body {
     width: 160px;
 }
 
-#next-piece {
-    padding-left: 20%;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    height: 64px;
-    width: 64px;
+#panel p {
+    padding-left: 10px;
+    font-size: 10px;
+    color: white;
+    font-family: 'Press Start 2P', Consolas, monospace;
 }
 
-#panel p {
+
+#panel#next-piece {
     padding-left: 10px;
     font-size: 10px;
     color: white;

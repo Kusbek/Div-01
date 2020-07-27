@@ -7,7 +7,6 @@ export default class Controller {
 
         document.addEventListener('keydown', this.handleKeyDown.bind(this))
         document.addEventListener('keyup', this.handleKeyUp.bind(this))
-
         this.view.renderStartScreen()
     }
     update() {
@@ -17,6 +16,7 @@ export default class Controller {
 
     play() {
         this.isPLaying = true
+        console.log("I'm Here!!!!", this.isPLaying)
         this.startTimer()
         this.updateView()
     }
@@ -34,7 +34,6 @@ export default class Controller {
 
     updateView() {
         const state = this.game.getState()
-
         if (state.isGameOver) {
             this.view.renderEndScreen(state)
         }
@@ -44,6 +43,7 @@ export default class Controller {
         } else {
             this.view.renderMainScreen(state)
         }
+        
     }
 
     startTimer() {
@@ -71,8 +71,12 @@ export default class Controller {
     }
     handleKeyDown(event) {
         const state = this.game.getState()
-
         switch (event.keyCode) {
+            case 82:
+                if(!this.isPLaying){
+                    this.reset()
+                }
+                break
             case 13: //ENTER
                 if (state.isGameOver) {
                     this.reset()
@@ -100,5 +104,6 @@ export default class Controller {
                 this.updateView()
                 break
         }
+        console.log(this.isPLaying)
     }
 }

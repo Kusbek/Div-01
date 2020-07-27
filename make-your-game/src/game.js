@@ -1,9 +1,9 @@
 export default class Game {
     static points = {
-        '1': 40,
-        '2': 100,
-        '3': 300,
-        '4': 1200,
+        '1': 4,
+        '2': 10,
+        '3': 30,
+        '4': 120,
     }
 
     constructor() {
