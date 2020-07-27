@@ -11,7 +11,7 @@ export default class Game {
     }
 
     get level() {
-        return 5 //Math.floor(this.lines * 0.1)
+        return Math.floor(this.lines * 0.1)
     }
     createPlayField() {
         const playfield = []
