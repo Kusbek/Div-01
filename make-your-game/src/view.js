@@ -102,13 +102,16 @@ export default class View {
         }
     }
 
-    renderPanel({ level, score, lines, nextPiece }) {
+    renderPanel({ level, score, lines, nextPiece, timer }) {
+        console.log(timer)
         let pScore = document.getElementById("score")
         pScore.textContent = `Score: ${score}`
         let pLevel = document.getElementById("level")
         pLevel.textContent = `Level: ${level}`
         let pLines = document.getElementById("lines")
         pLines.textContent = `Lines: ${lines}`
+        let pTimer = document.getElementById("timer")
+        pTimer.textContent = `Timer: ${timer}`
         let pNext = document.getElementById("next")
         pNext.textContent = `Next:`
 

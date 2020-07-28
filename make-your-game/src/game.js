@@ -106,7 +106,9 @@ export default class Game {
                 }
             }
         }
-
+        let diff = new Date().getTime() - this.timer
+        let seconds = Math.floor((diff % (1000 * 60)) / 1000)
+        let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
         return {
             score: this.score,
             level: this.level,
@@ -114,6 +116,7 @@ export default class Game {
             nextPiece: this.nextPiece,
             playfield: playfield,
             isGameOver: this.topOut,
+            timer: `${minutes}:${seconds}`
         }
     }
 
@@ -124,6 +127,7 @@ export default class Game {
         this.playfield = this.createPlayField()
         this.activePiece = this.createPiece()
         this.nextPiece = this.createPiece()
+        this.timer = new Date().getTime()
     }
 
     movePieceLeft() {
@@ -250,10 +254,10 @@ export default class Game {
         return lines.length
     }
 
-    updateScore(clearedLines){
+    updateScore(clearedLines) {
         if (clearedLines > 0) {
             this.score += Game.points[clearedLines] * (this.level + 1)
-            this.lines +=clearedLines
+            this.lines += clearedLines
 
             console.log(this.score, this.lines)
         }
