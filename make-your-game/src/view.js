@@ -153,4 +153,12 @@ export default class View {
             cell.classList.add('cell')
         })
     }
+
+    animateStartScreen() {
+        window.requestAnimationFrame(this.renderStartScreen.bind(this))
+    }
+
+    animateMainScreen(state) {
+        window.requestAnimationFrame(this.renderMainScreen.bind(this,state))
+    }
 }
