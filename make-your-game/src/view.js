@@ -103,7 +103,6 @@ export default class View {
     }
 
     renderPanel({ level, score, lines, nextPiece, timer }) {
-        console.log(timer)
         let pScore = document.getElementById("score")
         pScore.textContent = `Score: ${score}`
         let pLevel = document.getElementById("level")

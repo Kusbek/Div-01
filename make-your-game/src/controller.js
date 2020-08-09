@@ -17,7 +17,6 @@ export default class Controller {
 
     play() {
         this.isPLaying = true
-        console.log("I'm Here!!!!", this.isPLaying)
         this.startTimer()
         this.updateView()
     }
@@ -48,11 +47,17 @@ export default class Controller {
     }
 
     startTimer() {
-        const speed = 1000 - this.game.getState().level * 100
+        let count = 0
+        const speed = 1000/60 //- this.game.getState().level * 100
         if (!this.intervalId) {
             this.intervalId = setInterval(() => {
-                this.update()
-            }, speed > 0 ? speed : 100)
+                count++
+                if (count == 60) {
+                    count = 0
+                    this.game.movePieceDown()
+                }
+                this.updateView()
+            }, speed)//speed > 0 ? speed : 100)
         }
     }
 
@@ -105,6 +110,5 @@ export default class Controller {
                 this.updateView()
                 break
         }
-        console.log(this.isPLaying)
     }
 }
