@@ -1,0 +1,47 @@
+/* Add a gray background color with some padding */
+body {
+  font-family: Arial;
+  background: #f1f1f1;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Fake image */
+.fakeimg {
+  background-color: #aaa;
+  height: 200px;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Add a card effect for articles */
+.feed-card {
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.leftcolumn {
+  float: left;
+  padding-left: 5%;
+  width: 60%;
+}
+
+.comments-wrapper {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.comments:hover {
+    background-color: rgb(148, 148, 148);
+    cursor: pointer;
+}
+
+.comments {
+    float: right;
+}

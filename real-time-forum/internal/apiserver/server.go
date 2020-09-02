@@ -1,10 +1,12 @@
 package apiserver
 
 import (
+	"DIV-01/real-time-forum/internal/model"
 	"DIV-01/real-time-forum/internal/session"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 //Server ...
@@ -30,6 +32,8 @@ func (s *server) newMux() {
 	mux.Handle("/", http.FileServer(http.Dir("web")))
 	mux.HandleFunc("/auth", s.authHandler)
 	mux.HandleFunc("/signup", s.signUpHandler)
+	mux.HandleFunc("/signin", s.signInHandler)
+	mux.HandleFunc("/signout", s.signOutHandler)
 	s.mux = mux
 }
 
@@ -53,4 +57,13 @@ func (s *server) respond(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)
+}
+
+func (s *server) setCookies(w http.ResponseWriter, user *model.User) {
+	cookie := http.Cookie{
+		Name:    "session_id",
+		Value:   s.cookies.Insert(user),
+		Expires: time.Now().Add(10 * time.Hour),
+	}
+	http.SetCookie(w, &cookie)
 }

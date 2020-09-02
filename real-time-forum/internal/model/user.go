@@ -20,3 +20,16 @@ func (u *User) Validate() error {
 	err := validate.Struct(u)
 	return err
 }
+
+//TestUser ...
+func TestUser(creds string, password string) *User {
+	return &User{
+		ID:        len(creds),
+		Nickname:  creds,
+		Email:     "testemail@gmail.com",
+		Gender:    "male",
+		FirstName: "First Name",
+		LastName:  "Last Name",
+		Age:       20,
+	}
+}

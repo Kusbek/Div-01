@@ -1,11 +1,19 @@
 import User from './src/user/model.js'
-import View from './src/user/view.js'
-import Controller from './src/user/controller.js'
+import UserView from './src/user/view.js'
+import UserController from './src/user/controller.js'
+
+import Post from './src/post/model.js'
+import PostView from './src/post/view.js'
+import PostController from './src/post/controller.js'
 
 const user = new User()
-const view = new View()
-const controller = new Controller(user,view)
+const userView = new UserView()
+const userController = new UserController(user,userView)
 
-window.user = user
-window.view = view
-window.controller = controller
+const post = new Post()
+const postView = new PostView()
+const postController = new PostController(post, postView)
+
+// window.user = user
+// window.view = view
+// window.controller = controller
