@@ -6,14 +6,15 @@ import Post from './src/post/model.js'
 import PostView from './src/post/view.js'
 import PostController from './src/post/controller.js'
 
+
 const user = new User()
 const userView = new UserView()
-const userController = new UserController(user,userView)
+const userController = new UserController(user, userView)
 
 const post = new Post()
 const postView = new PostView()
-const postController = new PostController(post, postView)
+const postController = new PostController(user, post, postView)
 
-// window.user = user
+window.post = post
 // window.view = view
 // window.controller = controller

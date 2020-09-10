@@ -11,6 +11,36 @@ body {
   clear: both;
 }
 
+.post-template-save-button{
+  float: right;
+}
+
+.error{
+  padding: 10px;
+  color: red;
+}
+.post-template-input {
+  width: 100%;
+}
+
+.post-template-textarea {
+  resize: none;
+  width: 100%;
+  height: 100px;
+}
+
+.post-template-wrapper{
+  padding: 10px;
+  overflow:hidden;
+}
+
+#navbar-fullname{
+  font-size: 25px;
+  font-weight: bold;
+  position: relative;
+  padding-top: 15px;
+}
+
 /* Fake image */
 .fakeimg {
   background-color: #aaa;
@@ -32,16 +62,54 @@ body {
   width: 60%;
 }
 
+.new-comment-wrapper{
+  padding: 5px;
+  overflow:hidden;
+}
+
+.new-comment-wrapper div input{
+  width: 100%;
+}
+
+.new-comment-wrapper div {
+  padding-top: 5px;
+  float: left;
+  width: 85%;
+}
+
+.new-comment-wrapper button {
+  float: right;
+}
+
 .comments-wrapper {
-    padding-top: 10px;
-    padding-bottom: 10px;
+  height: 25px;
 }
 
-.comments:hover {
-    background-color: rgb(148, 148, 148);
-    cursor: pointer;
+.comments-count:hover {
+  background-color: rgb(148, 148, 148);
+  cursor: pointer;
 }
 
-.comments {
-    float: right;
+.comments-count {
+  float: left;
+}
+
+.comment-author {
+  font-size: 12px;
+  color: rgb(148, 148, 148);
+}
+.comment-wrapper {
+  padding: 5px;
+  border-style: none none solid none;
+  border-width: 1px;
+  border-color: rgb(202, 203, 204);
+}
+
+.det-comments-wrapper {
+  border: rgb(148, 148, 148);
+  border-style: solid none none none;
+  padding-left: 20px;
+}
+.comment-text {
+  font-size: 16px;
 }

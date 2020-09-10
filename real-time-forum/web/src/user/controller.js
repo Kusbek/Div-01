@@ -43,6 +43,7 @@ export default class UserController {
             this.view.updateFullnameToNavBar(user)
             this.view.updateSignInUpButton(user)
             this.view.toggleSignInUpModal()
+        
         }).catch((error) => {
             console.log(error)
         })

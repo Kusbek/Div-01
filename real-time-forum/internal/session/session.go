@@ -3,7 +3,6 @@ package session
 import (
 	"DIV-01/real-time-forum/internal/model"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
@@ -64,8 +63,7 @@ func (c *cookie) Delete(uuid string) {
 func (c *cookie) monitor() {
 	for {
 		// fmt.Println("cookie monitoring!!!")
-		time.Sleep(1 * time.Second)
-		fmt.Println(c.sessions)
+		time.Sleep(10 * time.Second)
 		for key, value := range c.sessions {
 
 			if value.expireTime.Before(time.Now()) {
