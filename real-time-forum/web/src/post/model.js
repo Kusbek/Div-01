@@ -2,48 +2,23 @@ export default class Post {
     constructor() {
         this.posts = []
         this.postURL = "/post"
-        this.comments = {
-            1: [
-                {
-                    author: "nickfury",
-                    text: "Avengers Assemble",
-                },
-                {
-                    author: "kusbek",
-                    text: "Debich",
-                }
-            ],
-
-            2: [
-                {
-                    author: "gavnojui",
-                    text: "TEXT TEXT TEXT",
-                },
-                {
-                    author: "kusbek",
-                    text: "Debich",
-                },
-                {
-                    author: "kusbek",
-                    text: "Debich",
-                }
-            ]
-        }
+        this.commentsURL = `/comment`
+        this.comments = {}
     }
+
     async getPostsFromServer() {
-        const posts = await fetch (this.postURL, {
+        const posts = await fetch(this.postURL, {
             method: "GET",
-        }).then((response)=>{
+        }).then((response) => {
             if (!response.ok) {
                 return Promise.reject(Error(response.statusText))
             }
 
             return response.json()
-        }).then((json)=>{
+        }).then((json) => {
             if (json.error != null || json.error != undefined) {
                 return Promise.reject(Error(json.error))
             }
-            console.log(json.posts)
             this.setPosts(json.posts)
             return this.getPosts()
         }).catch((e) => {
@@ -53,7 +28,7 @@ export default class Post {
         return posts
     }
 
-    getPosts(){
+    getPosts() {
         return this.posts
     }
 
@@ -61,82 +36,81 @@ export default class Post {
         for (post of posts) {
             this.posts.push(post)
         }
-        
     }
 
     createPost(body) {
         return {
-         
-                id: 4,
-                title: body.title,
-                text: body.text,
-                comments: 0,
-                author: {
-                    id: 1,
-                    nickname: "kusbek"
-                }
+
+            id: 4,
+            title: body.title,
+            text: body.text,
+            comments: 0,
+            author: {
+                id: 1,
+                nickname: "kusbek"
+            }
 
         }
     }
 
+
+    async getCommentsFromServer(postId) {
+        const comments = await fetch(`${this.commentsURL}?post_id=${postId}`, {
+            method: "GET",
+        }).then((response) => {
+            if (!response.ok) {
+                return Promise.reject(Error(response.statusText))
+            }
+            return response.json()
+        }).then((json) => {
+            if (json.error != null || json.error != undefined) {
+                return Promise.reject(Error(json.error))
+            }
+            this.setComments(postId, json.comments)
+            return this.getComments(postId)
+        }).catch((e) => {
+            return Promise.reject(Error(e))
+        })
+
+        return comments
+    }
+
+    setComments(postId, comments) {
+        this.comments[postId] = comments
+    }
 
     getComments(postId) {
         return this.comments[postId]
     }
-    createComment({postId, text}) {
-        const newComment = {
-            author: "kusbek",
-            id: text.length,
+
+    async createCommentInServer({ postId, text }) {
+        let body = {
+            post_id: postId,
             text: text,
         }
-        if (this.comments[postId] == undefined) {
-            this.comments[postId] = [
-                newComment,
-            ]
-        } else {
-            this.comments[postId].push(newComment)
-        }
+        const newComment = await fetch(`${this.commentsURL}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+              },
+            body: JSON.stringify(body)
+            // body:`post_id=${postId}&text=${text}`
+        }).then((response) => {
+            if (!response.ok) {
+                return Promise.reject(Error(response.statusText))
+            }
+            return response.json()
+        }).then((json) => {
+            if (json.error != null || json.error != undefined) {
+                return Promise.reject(Error(json.error))
+            }
+            let newComment = json.comment 
+            return newComment
+        }).catch((e) => {
+            return Promise.reject(Error(e))
+        })
+       
         return newComment
     }
 }
-
-
-
-        // return [
-        //     {
-        //         id: 1,
-        //         title: "TITLE HEADING 1",
-        //         text: `Some text..
-
-        //         Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.`,
-        //         comments: 2,
-        //         author: {
-        //             id: 1,
-        //             nickname: "kusbek"
-        //         }
-        //     },
-        //     {
-        //         id: 2,
-        //         title: "TITLE HEADING 2",
-        //         text: `Some text..
-
-        //         Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.`,
-        //         comments: 3,
-        //         author: {
-        //             id: 2,
-        //             nickname: "postAuthorNickname"
-        //         }
-        //     },
-        //     {
-        //         id: 3,
-        //         title: "TITLE HEADING 3",
-        //         text: `Some text..
-
-        //         Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.`,
-        //         comments: 0,
-        //         author: {
-        //             id: 1,
-        //             nickname: "kusbek"
-        //         }
-        //     }
-        // ]

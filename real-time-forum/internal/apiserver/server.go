@@ -35,6 +35,7 @@ func (s *server) newMux() {
 	mux.HandleFunc("/signin", s.signInHandler)
 	mux.HandleFunc("/signout", s.signOutHandler)
 	mux.HandleFunc("/post", s.handlePosts)
+	mux.HandleFunc("/comment", s.handleComments)
 	s.mux = mux
 }
 

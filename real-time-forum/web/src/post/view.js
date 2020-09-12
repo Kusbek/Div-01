@@ -101,7 +101,7 @@ export default class PostView {
         const commentsWrapper = this.tempFeedCard.lastChild
         const commentWrapper = this.createElement("div", "comment-wrapper")
         const commentAuthor = this.createElement("div", "comment-author")
-        commentAuthor.textContent = comment.author
+        commentAuthor.textContent = comment.author.nickname
         const commentText = this.createElement("div", "comment-text")
         commentText.textContent = comment.text
         commentWrapper.append(commentAuthor, commentText)
