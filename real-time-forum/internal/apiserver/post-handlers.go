@@ -2,15 +2,19 @@ package apiserver
 
 import (
 	"DIV-01/real-time-forum/internal/model"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 )
 
-var posts map[int]*model.Post = make(map[int]*model.Post)
+var (
+	temoPostID = 4
+)
 
-func init() {
-	posts[1] = &model.Post{
+func (s *server) makePosts() {
+	s.posts = make(map[int]*model.Post)
+	s.posts[1] = &model.Post{
 		ID:    1,
 		Title: "TITLE HEADING 1",
 		Text: `Some text..
@@ -21,7 +25,7 @@ func init() {
 			Nickname: "kusbek",
 		},
 	}
-	posts[2] = &model.Post{
+	s.posts[2] = &model.Post{
 		ID:    2,
 		Title: "TITLE HEADING 1",
 		Text: `Some text..
@@ -32,7 +36,7 @@ func init() {
 			Nickname: "postAuthorNickname",
 		},
 	}
-	posts[3] = &model.Post{
+	s.posts[3] = &model.Post{
 		ID:    3,
 		Title: "TITLE HEADING 1",
 		Text: `Some text..
@@ -59,7 +63,7 @@ func (s *server) handlePosts(w http.ResponseWriter, r *http.Request) {
 func (s *server) handleGetPosts(w http.ResponseWriter, r *http.Request) {
 	res := make([]*model.Post, 0)
 
-	for _, v := range posts {
+	for _, v := range s.posts {
 		res = append(res, v)
 	}
 
@@ -67,4 +71,57 @@ func (s *server) handleGetPosts(w http.ResponseWriter, r *http.Request) {
 		"posts": res,
 	})
 }
-func (s *server) handleCreatePost(w http.ResponseWriter, r *http.Request) {}
+
+//CreatePostParams ...
+type CreatePostParams struct {
+	Title string `json:"title"`
+	Text  string `json:"text"`
+}
+
+func (r *CreatePostParams) getParams(req *http.Request) error {
+	d := json.NewDecoder(req.Body)
+	defer req.Body.Close()
+	err := d.Decode(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *server) handleCreatePost(w http.ResponseWriter, r *http.Request) {
+	session, err := r.Cookie("session_id")
+	if err == http.ErrNoCookie {
+		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		return
+	}
+	user, err := s.cookies.Check(session.Value)
+	if err != nil {
+		s.error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	d := &createCommentParams{}
+	err = d.getParams(r)
+	if err != nil {
+		s.error(w, http.StatusBadRequest, err)
+		return
+	}
+	res := &model.Post{
+		ID: temoPostID,
+		Author: &model.User{
+			ID:       user.ID,
+			Nickname: user.Nickname,
+		},
+		Comments: func() int {
+			s.comments[temoPostID] = make([]*model.Comment, 0)
+			return len(s.comments[temoPostID])
+		}(),
+		Text: d.Text,
+	}
+
+	s.posts[temoPostID] = res
+	temoPostID++
+	s.respond(w, http.StatusOK, map[string]interface{}{
+		"post": res,
+	})
+}

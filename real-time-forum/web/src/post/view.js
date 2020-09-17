@@ -14,7 +14,7 @@ export default class PostView {
         this.feedWall.append(btnWrapper)
     }
 
-    displayLoginWarningToCreatePost() {
+    displayLoginWarning() {
         const logginError = this.createElement("p", "error")
         logginError.textContent = "You have to login for this action!!!"
         this.btnWrapper.append(logginError)
@@ -133,7 +133,6 @@ export default class PostView {
 
     bindUnfoldComments(handler) {
         const comments = document.getElementsByClassName("comments-count")
-
         Array.from(comments).forEach((comment) => {
             comment.addEventListener('click', (event) => {
                 this.tempFeedCard = event.target.parentElement.parentElement

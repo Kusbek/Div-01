@@ -38,19 +38,34 @@ export default class Post {
         }
     }
 
-    createPost(body) {
-        return {
-
-            id: 4,
+    async createPostInServer(body) {
+        let jsonBody = {
             title: body.title,
-            text: body.text,
-            comments: 0,
-            author: {
-                id: 1,
-                nickname: "kusbek"
-            }
-
+            text : body.text,
         }
+        const newPost = await fetch(`${this.postURL}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify(jsonBody)
+        }).then((response) => {
+            if (!response.ok) {
+                return Promise.reject(Error(response.statusText))
+            }
+            return response.json()
+        }).then((json) => {
+            if (json.error != null || json.error != undefined) {
+                return Promise.reject(Error(json.error))
+            }
+            let newPost = json.post
+            console.log(newPost)
+            return newPost
+        }).catch((e) => {
+            return Promise.reject(Error(e))
+        })
+       
+        return newPost
     }
 
 

@@ -11,7 +11,7 @@ import (
 func (s *server) authHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := r.Cookie("session_id")
 	if err == http.ErrNoCookie {
-		s.error(w, http.StatusUnauthorized, errors.New("Unathorized"))
+		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
 		return
 	}
 	user, err := s.cookies.Check(session.Value)

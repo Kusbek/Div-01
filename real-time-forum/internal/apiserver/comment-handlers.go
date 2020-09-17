@@ -4,16 +4,15 @@ import (
 	"DIV-01/real-time-forum/internal/model"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 )
 
-var comments map[int][]*model.Comment = make(map[int][]*model.Comment)
 var tempID int = 25
 
-func init() {
-	comments[1] = []*model.Comment{
+func (s *server) makeComments() {
+	s.comments = make(map[int][]*model.Comment)
+	s.comments[1] = []*model.Comment{
 		{
 			ID: 1,
 			Author: &model.User{
@@ -32,7 +31,7 @@ func init() {
 		},
 	}
 
-	comments[2] = []*model.Comment{
+	s.comments[2] = []*model.Comment{
 		{
 			ID: 3,
 			Author: &model.User{
@@ -93,7 +92,7 @@ func (s *server) handleGetComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, _ := comments[params.postID]
+	res, _ := s.comments[params.postID]
 	s.respond(w, http.StatusOK, map[string]interface{}{
 		"comments": res,
 	})
@@ -111,16 +110,23 @@ func (r *createCommentParams) getParams(req *http.Request) error {
 	if err != nil {
 		return err
 	}
-
-	// req.ParseForm()
-	// fmt.Println(req.Form)
 	return nil
 }
 
 func (s *server) handleCreateComment(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Creating a comment")
+	session, err := r.Cookie("session_id")
+	if err == http.ErrNoCookie {
+		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		return
+	}
+	user, err := s.cookies.Check(session.Value)
+	if err != nil {
+		s.error(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	d := &createCommentParams{}
-	err := d.getParams(r)
+	err = d.getParams(r)
 	if err != nil {
 		s.error(w, http.StatusBadRequest, err)
 		return
@@ -128,20 +134,21 @@ func (s *server) handleCreateComment(w http.ResponseWriter, r *http.Request) {
 	res := &model.Comment{
 		ID: tempID,
 		Author: &model.User{
-			ID:       1,
-			Nickname: "kusbek",
+			ID:       user.ID,
+			Nickname: user.Nickname,
 		},
 		Text: d.Text,
 	}
 	tempID++
 
-	if c, ok := comments[d.PostID]; ok {
+	if c, ok := s.comments[d.PostID]; ok {
 		c = append(c, res)
-		comments[d.PostID] = c
+		s.comments[d.PostID] = c
 	} else {
-		comments[d.PostID] = make([]*model.Comment, 0)
-		comments[d.PostID] = append(comments[d.PostID], res)
+		s.comments[d.PostID] = make([]*model.Comment, 0)
+		s.comments[d.PostID] = append(s.comments[d.PostID], res)
 	}
+	s.posts[d.PostID].Comments = len(s.comments[d.PostID])
 
 	s.respond(w, http.StatusOK, map[string]interface{}{
 		"comment": res,

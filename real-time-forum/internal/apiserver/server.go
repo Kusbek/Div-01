@@ -15,14 +15,18 @@ type Server interface {
 }
 
 type server struct {
-	mux     *http.ServeMux
-	cookies session.Cookie
+	mux      *http.ServeMux
+	cookies  session.Cookie
+	posts    map[int]*model.Post
+	comments map[int][]*model.Comment
 }
 
 func newServer() Server {
 	s := &server{
 		cookies: session.New(),
 	}
+	s.makePosts()
+	s.makeComments()
 	s.newMux()
 	return s
 }
