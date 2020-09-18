@@ -8,11 +8,26 @@ import PostController from './src/post/controller.js'
 
 import Chat from './src/chat/model.js'
 import ChatView from './src/chat/view.js'
-import ChatController from './src/chat/controller.js' 
+import ChatController from './src/chat/controller.js'
 
 class Main {
     constructor() {
+        const userModel = new User()
+        const userView = new UserView()
+        const userController = new UserController(userModel, userView)
+
+
+       
+        this.newPost(userModel)
         this.newChat()
+    }
+
+    newPost = (user) => {
+        const post = new Post()
+        const postView = new PostView()
+        const postController = new PostController(user, post, postView)
+        //  window.post = post
+        this.newDependency(post,postView,postController)
     }
 
     newChat = () => {
@@ -31,18 +46,12 @@ class Main {
     }
 }
 
-const user = new User()
-const userView = new UserView()
-const userController = new UserController(user, userView)
 
-const post = new Post()
-const postView = new PostView()
-const postController = new PostController(user, post, postView)
 
 const main = new Main()
 
-window.post = post
-window.user = user
+
+// window.user = user
 // window.controller = controller
 
 

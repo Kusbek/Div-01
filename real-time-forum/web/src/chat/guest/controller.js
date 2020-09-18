@@ -9,4 +9,8 @@ export default class GuestController {
     displayGuest = () => {
         this.view.display(this.model.get())
     }
+
+    delete = () => {
+        this.view.delete()
+    }
 }

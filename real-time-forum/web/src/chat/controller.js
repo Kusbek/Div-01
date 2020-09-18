@@ -11,18 +11,22 @@ export default class ChatController {
 
 
     initGuestsSocket = () => {
-        this.model.getGuestsFromServer(this.handleNewGuest)
+        this.model.monitorGuestsInServer(this.handleNewGuest, this.handleDeleteGuest)
+        
     }
 
-    handleNewGuest = (guest) => {
-        const guestModel = new Guest(guest)
+    handleNewGuest = (user) => {
+        const guestModel = new Guest(user)
         const guestView = new GuestView(this.view.chatWall)
         const guestController = new GuestController(guestModel, guestView)
-
         return {
             model: guestModel,
             view: guestView,
             controller: guestController,
         }
+    }
+
+    handleDeleteGuest = (guest) => {
+        guest.controller.delete()
     }
 }

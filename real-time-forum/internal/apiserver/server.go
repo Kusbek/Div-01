@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -15,19 +16,26 @@ type Server interface {
 }
 
 type server struct {
-	mux      *http.ServeMux
-	cookies  session.Cookie
-	posts    map[int]*model.Post
-	comments map[int][]*model.Comment
+	mux             *http.ServeMux
+	cookies         session.Cookie
+	posts           map[int]*model.Post
+	comments        map[int][]*model.Comment
+	guests          []*guest
+	deleteGuestChan chan *guest
+	mu              *sync.Mutex
 }
 
 func newServer() Server {
 	s := &server{
-		cookies: session.New(),
+		cookies:         session.New(),
+		guests:          make([]*guest, 0),
+		deleteGuestChan: make(chan *guest, 10),
+		mu:              &sync.Mutex{},
 	}
 	s.makePosts()
 	s.makeComments()
 	s.newMux()
+	go s.monitorDeleteGuestChan()
 	return s
 }
 
@@ -40,6 +48,7 @@ func (s *server) newMux() {
 	mux.HandleFunc("/signout", s.signOutHandler)
 	mux.HandleFunc("/post", s.handlePosts)
 	mux.HandleFunc("/comment", s.handleComments)
+	mux.HandleFunc("/chat", s.chatWsHandler)
 	s.mux = mux
 }
 

@@ -2,35 +2,41 @@
 
 export default class Chat {
     constructor() {
-        this.guests = []
+        this.guests = {}
+        this.wsUrl = "ws://localhost:8082/chat"
     }
 
-    getGuestsFromServer(newGuestHandler) {
-        const guests = [
-            {
-                id: 2,
-                nickname: "guest2"
-            },
-            {
-                id: 3,
-                nickname: "guest3"
-            },    
-            {
-                id: 4,
-                nickname: "guest4"
-            },          
-        ]
-
-        for (let guest of guests) {
-            this.guests.push(newGuestHandler(guest))
+    monitorGuestsInServer(newGuestHandler, deleteGuestHandler) {
+        const socket = new WebSocket(this.wsUrl + `?`)
+        socket.onopen = () => {
+            console.log("Opened Socket")
         }
 
-        return this.getGuests()
+        socket.onmessage = (e) => {
+            let msg = JSON.parse(e.data)
+            
+            let action = msg.action
+            if (action == "add") {
+                let guest = newGuestHandler(msg.user)
+                this.guests[msg.user.id] = guest
+            } else {
+                let g = this.guests[msg.user.id]
+                deleteGuestHandler(g)
+                delete this.guests[msg.user.id]
+            }
+            console.log(this.guests)
+        }
+
+        socket.onclose = () => {
+            console.log("Close Socket")
+        }
+
+        this.socket = socket
     }
 
-    getGuests(){
+    getGuests() {
         return this.guests
     }
 
-    
+
 }

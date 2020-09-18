@@ -21,10 +21,13 @@ func (u *User) Validate() error {
 	return err
 }
 
+var count int = 0
+
 //TestUser ...
 func TestUser(creds string, password string) *User {
+	count++
 	return &User{
-		ID:        len(creds),
+		ID:        count,
 		Nickname:  creds,
 		Email:     "testemail@gmail.com",
 		Gender:    "male",

@@ -10,6 +10,7 @@ export default class Post {
         const posts = await fetch(this.postURL, {
             method: "GET",
         }).then((response) => {
+            
             if (!response.ok) {
                 return Promise.reject(Error(response.statusText))
             }
@@ -33,7 +34,7 @@ export default class Post {
     }
 
     setPosts(posts) {
-        for (post of posts) {
+        for (let post of posts) {
             this.posts.push(post)
         }
     }
