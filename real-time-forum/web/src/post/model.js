@@ -43,6 +43,7 @@ export default class Post {
         let jsonBody = {
             title: body.title,
             text : body.text,
+            category: "game",
         }
         const newPost = await fetch(`${this.postURL}`, {
             method: "POST",

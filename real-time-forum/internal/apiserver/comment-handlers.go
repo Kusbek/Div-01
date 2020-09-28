@@ -148,7 +148,7 @@ func (s *server) handleCreateComment(w http.ResponseWriter, r *http.Request) {
 		s.comments[d.PostID] = make([]*model.Comment, 0)
 		s.comments[d.PostID] = append(s.comments[d.PostID], res)
 	}
-	s.posts[d.PostID].Comments = len(s.comments[d.PostID])
+	// s.posts[d.PostID].Comments = len(s.comments[d.PostID])
 
 	s.respond(w, http.StatusOK, map[string]interface{}{
 		"comment": res,

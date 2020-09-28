@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"DIV-01/real-time-forum/internal/model"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -41,7 +42,21 @@ func (s *server) signInHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := model.TestUser(b.Creds, b.Password)
+	user, err := s.store.User().Find(b.Creds)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			s.error(w, http.StatusForbidden, errors.New("No such user"))
+			return
+		}
+		s.error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	err = user.ComparePasswords(b.Password)
+	if err != nil {
+		s.error(w, http.StatusForbidden, err)
+		return
+	}
 
 	s.setCookies(w, user)
 	// s.error(w, http.StatusUnauthorized, errors.New("Unothorized"))
@@ -109,7 +124,13 @@ func (s *server) signUpHandler(w http.ResponseWriter, r *http.Request) {
 		s.error(w, http.StatusBadRequest, err)
 		return
 	}
-	user.ID = len(user.Nickname)
+
+	err = s.store.User().Create(user)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	s.setCookies(w, user)
 	// s.error(w, http.StatusUnauthorized, errors.New("Unothorized"))
 	s.respond(w, http.StatusOK, map[string]interface{}{

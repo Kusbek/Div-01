@@ -3,10 +3,17 @@ import GuestView from './guest/view.js'
 import GuestController from './guest/controller.js'
 
 export default class ChatController {
-    constructor(model, view) {
+    constructor(userModel, model, view) {
+        this.userModel = userModel
         this.model = model
         this.view = view
         this.initGuestsSocket()
+    }
+
+
+    delete() {
+        this.view.delete()
+        this.model.closeWS()
     }
 
 
@@ -18,7 +25,7 @@ export default class ChatController {
     handleNewGuest = (user) => {
         const guestModel = new Guest(user)
         const guestView = new GuestView(this.view.chatWall)
-        const guestController = new GuestController(guestModel, guestView)
+        const guestController = new GuestController(this.userModel,guestModel, guestView)
         return {
             model: guestModel,
             view: guestView,

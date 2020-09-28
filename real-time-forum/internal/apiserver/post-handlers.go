@@ -8,46 +8,6 @@ import (
 	"net/http"
 )
 
-var (
-	temoPostID = 4
-)
-
-func (s *server) makePosts() {
-	s.posts = make(map[int]*model.Post)
-	s.posts[1] = &model.Post{
-		ID:    1,
-		Title: "TITLE HEADING 1",
-		Text: `Some text..
-		Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.`,
-		Comments: 2,
-		Author: &model.User{
-			ID:       1,
-			Nickname: "kusbek",
-		},
-	}
-	s.posts[2] = &model.Post{
-		ID:    2,
-		Title: "TITLE HEADING 1",
-		Text: `Some text..
-		Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.`,
-		Comments: 3,
-		Author: &model.User{
-			ID:       2,
-			Nickname: "postAuthorNickname",
-		},
-	}
-	s.posts[3] = &model.Post{
-		ID:    3,
-		Title: "TITLE HEADING 1",
-		Text: `Some text..
-		Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.`,
-		Comments: 0,
-		Author: &model.User{
-			ID:       1,
-			Nickname: "kusbek",
-		},
-	}
-}
 func (s *server) handlePosts(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Fetching Posts")
 	switch r.Method {
@@ -61,21 +21,21 @@ func (s *server) handlePosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) handleGetPosts(w http.ResponseWriter, r *http.Request) {
-	res := make([]*model.Post, 0)
-
-	for _, v := range s.posts {
-		res = append(res, v)
+	posts, err := s.store.Post().GetAll()
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
 	}
 
 	s.respond(w, http.StatusOK, map[string]interface{}{
-		"posts": res,
+		"posts": posts,
 	})
 }
 
 //CreatePostParams ...
 type CreatePostParams struct {
-	Title string `json:"title"`
-	Text  string `json:"text"`
+	Title    string `json:"title"`
+	Text     string `json:"text"`
+	Category string `json:"category"`
 }
 
 func (r *CreatePostParams) getParams(req *http.Request) error {
@@ -100,28 +60,28 @@ func (s *server) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d := &createCommentParams{}
+	d := &CreatePostParams{}
 	err = d.getParams(r)
 	if err != nil {
 		s.error(w, http.StatusBadRequest, err)
 		return
 	}
-	res := &model.Post{
-		ID: temoPostID,
+	newPost := &model.Post{
 		Author: &model.User{
-			ID:       user.ID,
-			Nickname: user.Nickname,
+			ID: user.ID,
 		},
-		Comments: func() int {
-			s.comments[temoPostID] = make([]*model.Comment, 0)
-			return len(s.comments[temoPostID])
-		}(),
-		Text: d.Text,
+		Title:    d.Title,
+		Text:     d.Text,
+		Category: d.Category,
 	}
 
-	s.posts[temoPostID] = res
-	temoPostID++
+	err = s.store.Post().Create(newPost)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	s.respond(w, http.StatusOK, map[string]interface{}{
-		"post": res,
+		"post": newPost,
 	})
 }

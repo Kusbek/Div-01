@@ -3,6 +3,7 @@ package apiserver
 import (
 	"DIV-01/real-time-forum/internal/model"
 	"DIV-01/real-time-forum/internal/session"
+	"DIV-01/real-time-forum/internal/store"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,27 +13,32 @@ import (
 
 //Server ...
 type Server interface {
-	ListenAndServe(string) error
+	Run() error
 }
 
 type server struct {
 	mux             *http.ServeMux
+	store           store.Store
 	cookies         session.Cookie
-	posts           map[int]*model.Post
 	comments        map[int][]*model.Comment
 	guests          []*guest
 	deleteGuestChan chan *guest
 	mu              *sync.Mutex
+	roomIds         map[string]int
+	rooms           map[int]*room
 }
 
-func newServer() Server {
+//NewServer ...
+func NewServer(st store.Store) Server {
 	s := &server{
 		cookies:         session.New(),
+		store:           st,
 		guests:          make([]*guest, 0),
 		deleteGuestChan: make(chan *guest, 10),
+		roomIds:         make(map[string]int),
+		rooms:           make(map[int]*room),
 		mu:              &sync.Mutex{},
 	}
-	s.makePosts()
 	s.makeComments()
 	s.newMux()
 	go s.monitorDeleteGuestChan()
@@ -49,16 +55,9 @@ func (s *server) newMux() {
 	mux.HandleFunc("/post", s.handlePosts)
 	mux.HandleFunc("/comment", s.handleComments)
 	mux.HandleFunc("/chat", s.chatWsHandler)
+	mux.HandleFunc("/room", s.roomHandler)
+	mux.HandleFunc("/message", s.messageWsHandler)
 	s.mux = mux
-}
-
-func (s *server) ListenAndServe(addr string) error {
-	server := http.Server{
-		Addr:    addr,
-		Handler: s.mux,
-	}
-	fmt.Println("starting server at", addr)
-	return server.ListenAndServe()
 }
 
 func (s *server) error(w http.ResponseWriter, code int, err error) {

@@ -1,12 +1,21 @@
 package apiserver
 
+import (
+	"fmt"
+	"net/http"
+)
+
 //Options ...
 type Options struct {
 	Address string
 }
 
-//Start ....
-func Start(opts Options) error {
-	srv := newServer()
-	return srv.ListenAndServe(opts.Address)
+//Run ....
+func (s *server) Run() error {
+	server := http.Server{
+		Addr:    ":8082",
+		Handler: s.mux,
+	}
+	fmt.Println("starting server at", server.Addr)
+	return server.ListenAndServe()
 }

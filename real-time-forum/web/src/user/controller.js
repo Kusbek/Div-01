@@ -1,3 +1,7 @@
+import Chat from '../chat/model.js'
+import ChatView from '../chat/view.js'
+import ChatController from '../chat/controller.js'
+
 export default class UserController {
     constructor(user, view) {
         this.user = user
@@ -13,8 +17,10 @@ export default class UserController {
         this.user.authenticate().then((u) => {
             this.view.updateFullnameToNavBar(u)
             this.view.updateSignInUpButton(u)
+            this.newChat()
         }).catch((error) => {
             this.view.updateSignInUpButton(this.user.getUser())
+            
             console.log(error)
         })
     }
@@ -25,6 +31,7 @@ export default class UserController {
             this.user.signout().then((user) => {
                 this.view.updateFullnameToNavBar(user)
                 this.view.updateSignInUpButton(user)
+                this.deleteChat()
             }).catch((error) => {
                 console.log(error)
             })
@@ -43,9 +50,10 @@ export default class UserController {
             this.view.updateFullnameToNavBar(user)
             this.view.updateSignInUpButton(user)
             this.view.toggleSignInUpModal()
+            this.newChat()
         
         }).catch((error) => {
-            console.log(error)
+            alert(error)
         })
     }
 
@@ -65,8 +73,32 @@ export default class UserController {
             this.view.updateFullnameToNavBar(user)
             this.view.updateSignInUpButton(user)
             this.view.toggleSignInUpModal()
+            this.newChat()
         }).catch((error) => {
             console.log(error)
         })
     }
+
+    newChat = () => {
+        const model = new Chat()
+        const view = new ChatView()
+        const controller = new ChatController(this.user, model, view)
+        this.chat = this.newDependency(model, view, controller)
+    }
+
+
+    deleteChat = () => {
+        console.log(this.chat)
+        this.chat.controller.delete()
+        this.chat = undefined
+    }
+
+    newDependency = (model, view, controller) => {
+        return {
+            model: model,
+            view: view,
+            controller: controller,
+        }
+    }
+ 
 }

@@ -1,6 +1,11 @@
 package model
 
-import "github.com/go-playground/validator"
+import (
+	"errors"
+
+	"github.com/go-playground/validator"
+	"golang.org/x/crypto/bcrypt"
+)
 
 //User ...
 type User struct {
@@ -14,6 +19,34 @@ type User struct {
 	Password  string `json:"-" validate:"min=5"`
 }
 
+func encrypt(str string) (string, error) {
+	res, err := bcrypt.GenerateFromPassword([]byte(str), bcrypt.MinCost)
+	if err != nil {
+		return "", err
+	}
+	return string(res), nil
+}
+
+//EncryptPassword ...
+func (u *User) EncryptPassword() error {
+	encrypted, err := encrypt(u.Password)
+	if err != nil {
+		return err
+	}
+
+	u.Password = encrypted
+	return nil
+}
+
+//ComparePasswords ...
+func (u *User) ComparePasswords(password string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	if err != nil {
+		return errors.New("Passwords are not equal")
+	}
+	return nil
+}
+
 //Validate ...
 func (u *User) Validate() error {
 	var validate *validator.Validate = validator.New()
@@ -24,15 +57,16 @@ func (u *User) Validate() error {
 var count int = 0
 
 //TestUser ...
-func TestUser(creds string, password string) *User {
+func TestUser(nick string, password string) *User {
 	count++
 	return &User{
 		ID:        count,
-		Nickname:  creds,
-		Email:     "testemail@gmail.com",
+		Nickname:  nick,
+		Email:     nick + "@gmail.com",
 		Gender:    "male",
 		FirstName: "First Name",
 		LastName:  "Last Name",
 		Age:       20,
+		Password:  password,
 	}
 }

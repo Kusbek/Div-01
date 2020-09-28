@@ -60,6 +60,8 @@ body {
   float: left;
   padding-left: 5%;
   width: 60%;
+  height: 920px;
+  overflow-y: scroll;
 }
 
 .rightcolumn {
@@ -140,4 +142,46 @@ body {
 .guest-wrapper:hover {
   background-color: rgb(148, 148, 148);
   cursor: pointer;
+}
+
+.messages-wrapper {
+  height: 650px;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+.newmessage-wrapper {
+  width: 100%;
+}
+
+.newmessage-wrapper textarea {
+  width: 85%;
+  height: 200px;
+  resize: none;
+}
+
+.message-wrapper {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+
+.message-nickname {
+  font-weight: bold;
+}
+
+.message-timestamp {
+  font-size: 10px;
+}
+
+.message-text {
+  /* overflow: auto; */
+  text-align: left;
 }

@@ -10,6 +10,7 @@ export default class User {
 
     getUser() {
         return {
+            id: this.id,
             isLoggedIn: this.isLoggedIn,
             nickname: this.nickname,
             email: this.email,
@@ -20,6 +21,7 @@ export default class User {
     }
 
     setUser(user) {
+        this.id = user.id
         this.isLoggedIn = true
         this.nickname = user.nickname
         this.email = user.email
@@ -35,6 +37,7 @@ export default class User {
         this.firstName = ""
         this.lastName = ""
         this.age = 0
+        this.id = undefined
     }
 
 
@@ -61,36 +64,35 @@ export default class User {
         const user = fetch(this.signinURL, {
             body: JSON.stringify(body),
             method: 'POST',
+        }).then((response) => {
+        if (!response.ok) {
+            if (response.status == 403) {
+                return Promise.reject(Error("No such user"))
+            }
+            return Promise.reject(Error(response.statusText))
         }
-        ).then((response) => {
-            if (!response.ok) {
-                return Promise.reject(Error(response.statusText))
-            }
-
-            return response.json()
-        }).then((json) => {
-            if (json.error != null || json.error != undefined) {
-                return Promise.reject(Error(json.error))
-            }
-            this.setUser(json.user)
-            return this.getUser()
-        }).catch((error) => {
-            return Promise.reject(error)
-        })
+        return response.json()
+    }).then((json) => {
+        if (json.error != null || json.error != undefined) {
+            return Promise.reject(Error(json.error))
+        }
+        this.setUser(json.user)
+        return this.getUser()
+    })
         return user
     }
 
     async signup(body) {
-        console.log(body)
         const user = fetch(this.signupURL, {
             body: JSON.stringify(body),
             method: 'POST',
-        }
-        ).then((response) => {
+        }).then((response) => {
             if (!response.ok) {
+                if (response.status == 403) {
+                    return Promise.reject(Error("No such user"))
+                }
                 return Promise.reject(Error(response.statusText))
             }
-
             return response.json()
         }).then((json) => {
             if (json.error != null || json.error != undefined) {
@@ -98,8 +100,6 @@ export default class User {
             }
             this.setUser(json.user)
             return this.getUser()
-        }).catch((error) => {
-            return Promise.reject(error)
         })
         return user
     }

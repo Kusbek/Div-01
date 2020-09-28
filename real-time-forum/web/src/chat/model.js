@@ -24,7 +24,7 @@ export default class Chat {
                 deleteGuestHandler(g)
                 delete this.guests[msg.user.id]
             }
-            console.log(this.guests)
+            // console.log(this.guests)
         }
 
         socket.onclose = () => {
@@ -32,6 +32,10 @@ export default class Chat {
         }
 
         this.socket = socket
+    }
+
+    closeWS = () => {
+        this.socket.close()
     }
 
     getGuests() {

@@ -15,4 +15,8 @@ export default class ChatView {
         }
         return element
     }
+
+    delete = ()=>{
+        this.chatWall.remove()
+    }
 }

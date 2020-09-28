@@ -1,5 +1,9 @@
+import Room from './room/model.js'
+import RoomView from './room/view.js'
+import RoomController from './room/controller.js'
 export default class GuestController {
-    constructor(model, view) {
+    constructor(userModel,model, view) {
+        this.userModel = userModel
         this.model = model
         this.view = view
 
@@ -8,6 +12,28 @@ export default class GuestController {
 
     displayGuest = () => {
         this.view.display(this.model.get())
+        this.view.bindHandleClick(this.handleClick)
+    }
+
+
+    handleClick = () => {
+        this.model.getRoomNumberFromServer(this.handleNewRoom).then((room) => {
+            this.room = room
+        }).catch((error)=>{
+            console.log(error)
+        })
+    }
+
+    handleNewRoom = (roomId) => {
+        const room = new Room(roomId)
+        const roomView = new RoomView()
+        const roomController = new RoomController(this.userModel,room, roomView)
+
+        return {
+            model: room,
+            view: roomView,
+            controller: roomController,
+        }
     }
 
     delete = () => {
