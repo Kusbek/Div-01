@@ -15,9 +15,11 @@ type Options struct {
 
 //Store ...
 type Store struct {
-	db             *sql.DB
-	userRepository *UserRepository
-	postRepository *PostRepository
+	db                *sql.DB
+	userRepository    *UserRepository
+	postRepository    *PostRepository
+	commentRepository *CommentRepository
+	roomRepository    *RoomRepository
 }
 
 //Start ...

@@ -10,6 +10,13 @@ import (
 	"time"
 )
 
+type room struct {
+	mu            *sync.Mutex
+	ID            int
+	messages      []*message
+	interlocutors []*interlocutor
+}
+
 func (s *server) roomHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:

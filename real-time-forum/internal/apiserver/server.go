@@ -17,10 +17,10 @@ type Server interface {
 }
 
 type server struct {
-	mux             *http.ServeMux
-	store           store.Store
-	cookies         session.Cookie
-	comments        map[int][]*model.Comment
+	mux     *http.ServeMux
+	store   store.Store
+	cookies session.Cookie
+
 	guests          []*guest
 	deleteGuestChan chan *guest
 	mu              *sync.Mutex
@@ -39,7 +39,7 @@ func NewServer(st store.Store) Server {
 		rooms:           make(map[int]*room),
 		mu:              &sync.Mutex{},
 	}
-	s.makeComments()
+
 	s.newMux()
 	go s.monitorDeleteGuestChan()
 	return s

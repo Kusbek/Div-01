@@ -4,5 +4,6 @@ CREATE TABLE posts (
   title VARCHAR NOT NULL,
   post_text VARCHAR,
   category VARCHAR,
-  comments INTEGER DEFAULT 0
+  comments INTEGER DEFAULT 0,
+  FOREIGN KEY (author_id) REFERENCES users (id)
  );

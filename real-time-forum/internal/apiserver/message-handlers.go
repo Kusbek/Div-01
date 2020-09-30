@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -24,13 +23,6 @@ func (il *interlocutor) sendMessage(m *message) {
 	if err := il.conn.WriteJSON(m); err != nil {
 		fmt.Println(err)
 	}
-}
-
-type room struct {
-	mu            *sync.Mutex
-	ID            int
-	messages      []*message
-	interlocutors []*interlocutor
 }
 
 type message struct {

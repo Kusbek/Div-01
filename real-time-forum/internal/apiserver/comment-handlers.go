@@ -8,57 +8,6 @@ import (
 	"strconv"
 )
 
-var tempID int = 25
-
-func (s *server) makeComments() {
-	s.comments = make(map[int][]*model.Comment)
-	s.comments[1] = []*model.Comment{
-		{
-			ID: 1,
-			Author: &model.User{
-				ID:       3,
-				Nickname: "nickfury",
-			},
-			Text: "Avengers Assemble",
-		},
-		{
-			ID: 2,
-			Author: &model.User{
-				ID:       1,
-				Nickname: "kusbek",
-			},
-			Text: "Debich",
-		},
-	}
-
-	s.comments[2] = []*model.Comment{
-		{
-			ID: 3,
-			Author: &model.User{
-				ID:       4,
-				Nickname: "gavnojui",
-			},
-			Text: "TEXT TEXT TEXT",
-		},
-		{
-			ID: 4,
-			Author: &model.User{
-				ID:       1,
-				Nickname: "kusbek",
-			},
-			Text: "Debich",
-		},
-		{
-			ID: 5,
-			Author: &model.User{
-				ID:       1,
-				Nickname: "kusbek",
-			},
-			Text: "Debich",
-		},
-	}
-}
-
 func (s *server) handleComments(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
@@ -91,10 +40,13 @@ func (s *server) handleGetComments(w http.ResponseWriter, r *http.Request) {
 		s.error(w, http.StatusBadRequest, err)
 		return
 	}
-
-	res, _ := s.comments[params.postID]
+	comments, err := s.store.Comment().Get(params.postID)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
+	}
 	s.respond(w, http.StatusOK, map[string]interface{}{
-		"comments": res,
+		"comments": comments,
 	})
 }
 
@@ -131,26 +83,23 @@ func (s *server) handleCreateComment(w http.ResponseWriter, r *http.Request) {
 		s.error(w, http.StatusBadRequest, err)
 		return
 	}
-	res := &model.Comment{
-		ID: tempID,
+
+	comment := &model.Comment{
+		PostID: d.PostID,
 		Author: &model.User{
 			ID:       user.ID,
 			Nickname: user.Nickname,
 		},
 		Text: d.Text,
 	}
-	tempID++
 
-	if c, ok := s.comments[d.PostID]; ok {
-		c = append(c, res)
-		s.comments[d.PostID] = c
-	} else {
-		s.comments[d.PostID] = make([]*model.Comment, 0)
-		s.comments[d.PostID] = append(s.comments[d.PostID], res)
+	err = s.store.Comment().Create(comment)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
 	}
-	// s.posts[d.PostID].Comments = len(s.comments[d.PostID])
 
 	s.respond(w, http.StatusOK, map[string]interface{}{
-		"comment": res,
+		"comment": comment,
 	})
 }

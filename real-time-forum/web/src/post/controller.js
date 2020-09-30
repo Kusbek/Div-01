@@ -76,7 +76,7 @@ export default class PostController {
                     })
                     return comments
                 }).then((comments) => {
-                    this.postView.incrementCommentCount()
+                    this.postView.incrementCommentCount(comments.length)
                     if (this.postView.tempFeedCard.querySelector(".det-comments-wrapper").innerHTML == "") {
                         this.postView.unfoldComments(comments)
                     } else {

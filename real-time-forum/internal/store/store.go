@@ -7,6 +7,23 @@ type Store interface {
 	Close()
 	User() UserRepository
 	Post() PostRepository
+	Comment() CommentRepository
+	Room() RoomRepository
+}
+
+//RoomRepository ...
+type RoomRepository interface {
+	GetRoomID(userID1, userID2 int) (*model.Room, error)
+	CreateRoom(userID1, userID2 int) (*model.Room, error)
+	DeleteRoom(id int) error
+	NewMessage(roomID int, m *model.Message) error
+	GetMessages(roomID int, from int) ([]*model.Message, error)
+}
+
+//CommentRepository ...
+type CommentRepository interface {
+	Get(postID int) ([]*model.Comment, error)
+	Create(comment *model.Comment) error
 }
 
 //PostRepository ...

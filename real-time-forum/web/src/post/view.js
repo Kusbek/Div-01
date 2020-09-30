@@ -92,9 +92,9 @@ export default class PostView {
         });
     }
 
-    incrementCommentCount() {
+    incrementCommentCount(nComments) {
         let commentCount = this.tempFeedCard.querySelector("div.comments-wrapper div")
-        commentCount.textContent = `${parseInt(commentCount.textContent.split(" ")[0])+1} comments`
+        commentCount.textContent = `${nComments} comments`
     }
 
     displayComment(comment) {
