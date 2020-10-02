@@ -1,19 +1,16 @@
 package apiserver
 
 import (
+	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
-	"sort"
 	"strconv"
 	"sync"
-	"time"
 )
 
-type room struct {
+type roomManager struct {
 	mu            *sync.Mutex
 	ID            int
-	messages      []*message
 	interlocutors []*interlocutor
 }
 
@@ -46,46 +43,25 @@ func (s *server) handleGetRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	roomCount++
-
-	slc := []int{user.ID, guestID}
-	sort.Ints(slc)
-	key := fmt.Sprintf("%d_%d", slc[0], slc[1])
-	if roomID, ok := s.roomIds[key]; ok {
-		s.respond(w, http.StatusOK, map[string]interface{}{
-			"room": roomID,
-		})
-		return
-	}
-	s.roomIds[key] = roomCount
-	s.rooms[roomCount] = &room{
-		ID: roomCount,
-		messages: func() []*message {
-			msgs := make([]*message, 0)
-			msgs = append(msgs, &message{
-				Timestamp: time.Now(),
-				User:      user,
-				Text:      "Idi nahoi",
-			})
-			for _, g := range s.guests {
-				if g.user.ID == guestID {
-					msgs = append(msgs, &message{
-						Timestamp: time.Now(),
-						User:      g.user,
-						Text:      "sam idi nahoi",
-					})
-					break
-				}
+	room, err := s.store.Room().GetRoom(user.ID, guestID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			room, err = s.store.Room().CreateRoom(user.ID, guestID)
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, errors.New("Failed to create room"))
+				return
 			}
+		} else {
+			s.error(w, http.StatusInternalServerError, errors.New("Failed to get room"))
+			return
+		}
 
-			return msgs
-		}(),
-		interlocutors: make([]*interlocutor, 0),
-		mu:            &sync.Mutex{},
+	}
+
+	if _, ok := s.rooms[room.ID]; !ok {
+		s.rooms[room.ID] = &roomManager{ID: room.ID, interlocutors: make([]*interlocutor, 0)}
 	}
 	s.respond(w, http.StatusOK, map[string]interface{}{
-		"room": roomCount,
+		"room": room,
 	})
 }

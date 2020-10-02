@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"DIV-01/real-time-forum/internal/model"
+	"DIV-01/real-time-forum/internal/store"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,21 +15,16 @@ import (
 )
 
 type interlocutor struct {
-	room *room
-	user *model.User
-	conn *websocket.Conn
+	roomManager *roomManager
+	room        store.RoomRepository
+	user        *model.User
+	conn        *websocket.Conn
 }
 
-func (il *interlocutor) sendMessage(m *message) {
+func (il *interlocutor) sendMessage(m *model.Message) {
 	if err := il.conn.WriteJSON(m); err != nil {
 		fmt.Println(err)
 	}
-}
-
-type message struct {
-	Timestamp time.Time   `json:"timestamp"`
-	User      *model.User `json:"user"`
-	Text      string      `json:"text"`
 }
 
 type inMessage struct {
@@ -55,53 +51,54 @@ func (s *server) messageWsHandler(w http.ResponseWriter, r *http.Request) {
 		s.error(w, http.StatusBadRequest, errors.New("room_id is invalid"))
 		return
 	}
-	room, ok := s.rooms[roomID]
-	fmt.Println(room)
-	if !ok {
-		s.error(w, http.StatusInternalServerError, errors.New("4e to ne mogu naiti takoy room"))
-		return
-	}
+
 	conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
 	if err != nil {
 		s.error(w, http.StatusInternalServerError, errors.New("Could not open websocket connection"))
 		return
 	}
+
+	messages, err := s.store.Room().GetMessages(roomID, 0)
 	il := &interlocutor{
-		room: room,
-		user: user,
-		conn: conn,
+		roomManager: s.rooms[roomID],
+		room:        s.store.Room(),
+		user:        user,
+		conn:        conn,
 	}
-	room.interlocutors = append(room.interlocutors, il)
-	for _, m := range room.messages {
+	fmt.Println(messages[0])
+	il.roomManager.interlocutors = append(il.roomManager.interlocutors, il)
+
+	for _, m := range messages {
 		il.sendMessage(m)
 	}
-
-	go il.monitorMessages()
+	go il.monitorMessages(roomID)
 }
 
-func (il *interlocutor) monitorMessages() {
+func (il *interlocutor) monitorMessages(roomID int) {
 	go func() {
 		for {
 			_, d, err := il.conn.ReadMessage()
 			if err != nil {
 				fmt.Println("Error reading message.", err)
-				return
+				continue
 			}
 			in := &inMessage{}
 			json.Unmarshal(d, in)
 
-			msg := &message{
+			msg := &model.Message{
 				Timestamp: time.Now(),
 				User:      il.user,
 				Text:      in.Message,
 			}
 
-			il.room.mu.Lock()
-			il.room.messages = append(il.room.messages, msg)
-			for _, i := range il.room.interlocutors {
+			err = il.room.NewMessage(roomID, msg)
+			if err != nil {
+				fmt.Println("Error saving message.", err)
+				continue
+			}
+			for _, i := range il.roomManager.interlocutors {
 				i.sendMessage(msg)
 			}
-			il.room.mu.Unlock()
 		}
 	}()
 }

@@ -1,5 +1,5 @@
 export default class Room {
-    constructor(id) {
+    constructor({id}) {
         this.id = id
         this.wsUrl = "ws://localhost:8082/message"
     }

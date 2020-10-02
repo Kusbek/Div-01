@@ -13,7 +13,7 @@ type Store interface {
 
 //RoomRepository ...
 type RoomRepository interface {
-	GetRoomID(userID1, userID2 int) (*model.Room, error)
+	GetRoom(userID1, userID2 int) (*model.Room, error)
 	CreateRoom(userID1, userID2 int) (*model.Room, error)
 	DeleteRoom(id int) error
 	NewMessage(roomID int, m *model.Message) error

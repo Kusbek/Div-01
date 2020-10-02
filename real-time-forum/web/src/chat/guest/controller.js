@@ -19,13 +19,14 @@ export default class GuestController {
     handleClick = () => {
         this.model.getRoomNumberFromServer(this.handleNewRoom).then((room) => {
             this.room = room
+            console.log(this.room)
         }).catch((error)=>{
             console.log(error)
         })
     }
 
-    handleNewRoom = (roomId) => {
-        const room = new Room(roomId)
+    handleNewRoom = (r) => {
+        const room = new Room(r)
         const roomView = new RoomView()
         const roomController = new RoomController(this.userModel,room, roomView)
 

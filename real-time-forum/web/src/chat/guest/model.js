@@ -24,7 +24,6 @@ export default class Guest {
             if (json.error != null || json.error != undefined) {
                 return Promise.reject(Error(json.error))
             }
-            console.log(json.room)
             let room = newRoomHandler(json.room)
             return room
         }).catch((e) => {

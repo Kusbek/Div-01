@@ -17,15 +17,13 @@ type Server interface {
 }
 
 type server struct {
-	mux     *http.ServeMux
-	store   store.Store
-	cookies session.Cookie
-
+	mux             *http.ServeMux
+	store           store.Store
+	cookies         session.Cookie
+	rooms           map[int]*roomManager
 	guests          []*guest
 	deleteGuestChan chan *guest
 	mu              *sync.Mutex
-	roomIds         map[string]int
-	rooms           map[int]*room
 }
 
 //NewServer ...
@@ -35,8 +33,7 @@ func NewServer(st store.Store) Server {
 		store:           st,
 		guests:          make([]*guest, 0),
 		deleteGuestChan: make(chan *guest, 10),
-		roomIds:         make(map[string]int),
-		rooms:           make(map[int]*room),
+		rooms:           make(map[int]*roomManager),
 		mu:              &sync.Mutex{},
 	}
 

@@ -4,12 +4,10 @@ import (
 	"DIV-01/real-time-forum/internal/model"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 )
 
 func (s *server) handlePosts(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Fetching Posts")
 	switch r.Method {
 	case "GET":
 		s.handleGetPosts(w, r)

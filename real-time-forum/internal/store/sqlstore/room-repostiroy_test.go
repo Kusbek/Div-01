@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"DIV-01/real-time-forum/internal/model"
-	"fmt"
 	"log"
 	"strconv"
 	"testing"
@@ -24,10 +23,9 @@ func Test_RoomRepository(t *testing.T) {
 	}
 	assert.NoError(t, err)
 
-	room, err := st.Room().GetRoomID(user1, user2)
+	room, err := st.Room().GetRoom(user1, user2)
 	assert.NoError(t, err)
 	assert.Equal(t, createdRoom.ID, room.ID)
-	fmt.Println(room.ID)
 	for i := 0; i < 100; i++ {
 		err = st.Room().NewMessage(room.ID, &model.Message{
 			Timestamp: time.Now(),
@@ -43,9 +41,8 @@ func Test_RoomRepository(t *testing.T) {
 		})
 	}
 
-	msgs, err := st.Room().GetMessages(room.ID, 0)
+	_, err = st.Room().GetMessages(room.ID, 0)
 	assert.NoError(t, err)
-	fmt.Println(msgs)
 	err = st.Room().DeleteRoom(room.ID)
 	assert.NoError(t, err)
 

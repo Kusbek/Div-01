@@ -22,8 +22,8 @@ func (s *Store) Room() store.RoomRepository {
 	return s.roomRepository
 }
 
-//GetRoomID ...
-func (rr *RoomRepository) GetRoomID(userID1, userID2 int) (*model.Room, error) {
+//GetRoom ...
+func (rr *RoomRepository) GetRoom(userID1, userID2 int) (*model.Room, error) {
 	room := &model.Room{}
 	row := rr.store.db.QueryRow(
 		`SELECT room_id FROM room_participants WHERE user_id in ($1,$2) GROUP BY room_id HAVING COUNT(*)>1;`,
@@ -140,7 +140,7 @@ func (rr *RoomRepository) NewMessage(roomID int, m *model.Message) error {
 //GetMessages ...
 func (rr *RoomRepository) GetMessages(roomID int, from int) ([]*model.Message, error) {
 	rows, err := rr.store.db.Query(`
-		SELECT message_timestamp, message_timestamp, users.id, users.nickname FROM messages
+		SELECT message_timestamp, message_text, users.id, users.nickname FROM messages
 		LEFT JOIN users ON messages.author_id = users.id
 		WHERE room_id = $1
 		LIMIT 10 OFFSET $2
