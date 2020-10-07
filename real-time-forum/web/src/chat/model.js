@@ -14,7 +14,7 @@ export default class Chat {
 
         socket.onmessage = (e) => {
             let msg = JSON.parse(e.data)
-            
+
             let action = msg.action
             if (action == "add") {
                 let guest = newGuestHandler(msg.user)
@@ -42,5 +42,9 @@ export default class Chat {
         return this.guests
     }
 
-
+    closeAllRooms = () => {
+        for (const [id, guest] of Object.entries(this.guests)) {
+            guest.controller.closeRoom()
+        }
+    }
 }

@@ -2,11 +2,12 @@ import Room from './room/model.js'
 import RoomView from './room/view.js'
 import RoomController from './room/controller.js'
 export default class GuestController {
-    constructor(userModel,model, view) {
+    constructor(closeAllRooms, newPost, userModel, model, view) {
         this.userModel = userModel
         this.model = model
         this.view = view
-
+        this.newPost = newPost
+        this.closeAllRooms = closeAllRooms
         this.displayGuest()
     }
 
@@ -17,10 +18,10 @@ export default class GuestController {
 
 
     handleClick = () => {
+        this.closeAllRooms()
         this.model.getRoomNumberFromServer(this.handleNewRoom).then((room) => {
             this.room = room
-            console.log(this.room)
-        }).catch((error)=>{
+        }).catch((error) => {
             console.log(error)
         })
     }
@@ -28,7 +29,7 @@ export default class GuestController {
     handleNewRoom = (r) => {
         const room = new Room(r)
         const roomView = new RoomView()
-        const roomController = new RoomController(this.userModel,room, roomView)
+        const roomController = new RoomController(this.newPost, this.userModel, room, roomView)
 
         return {
             model: room,
@@ -39,5 +40,11 @@ export default class GuestController {
 
     delete = () => {
         this.view.delete()
+    }
+
+    closeRoom = () => {
+        if (this.room != undefined && this.room != null) {
+            this.room.controller.closeSocket()
+        }
     }
 }

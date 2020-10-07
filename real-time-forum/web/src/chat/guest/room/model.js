@@ -1,11 +1,13 @@
 export default class Room {
-    constructor({id}) {
+    constructor({ id }) {
         this.id = id
+        this.next = 0
+        this.msgUrl = "/messages"
         this.wsUrl = "ws://localhost:8082/message"
     }
 
-     getMessagesFromServer = async () => {
-        const messages = await fetch(`${this.msgUrl}?room_id=${this.id}`, {
+    getMessagesFromServer = async () => {
+        const messages = await fetch(`${this.msgUrl}?room_id=${this.id}&page_num=${this.next}`, {
             method: "GET",
         }).then((response) => {
             if (!response.ok) {
@@ -16,6 +18,7 @@ export default class Room {
             if (json.error != null || json.error != undefined) {
                 return Promise.reject(Error(json.error))
             }
+            this.next = json.next
             let messages = json.messages
             return messages
         }).catch((e) => {
@@ -24,7 +27,7 @@ export default class Room {
         return messages
     }
 
-    monitorMessages = (newMessageHandler)=> {
+    monitorMessages = (newMessageHandler) => {
         const socket = new WebSocket(this.wsUrl + `?room_id=${this.id}`)
         socket.onopen = () => {
             console.log("Opened Room")
@@ -32,8 +35,8 @@ export default class Room {
 
         socket.onmessage = (e) => {
             let msg = JSON.parse(e.data)
-            
-            newMessageHandler(msg)
+
+            newMessageHandler(msg.message, true)
             // console.log(this.guests)
         }
 
@@ -45,6 +48,10 @@ export default class Room {
     }
 
     sendMessage = (message) => {
-        this.socket.send(JSON.stringify({message:message}))
+        this.socket.send(JSON.stringify({ message: message }))
+    }
+
+    closeSocket = () => {
+        this.socket.close()
     }
 }

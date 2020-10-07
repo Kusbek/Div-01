@@ -53,6 +53,7 @@ func (s *server) newMux() {
 	mux.HandleFunc("/comment", s.handleComments)
 	mux.HandleFunc("/chat", s.chatWsHandler)
 	mux.HandleFunc("/room", s.roomHandler)
+	mux.HandleFunc("/messages", s.handleGetMessages)
 	mux.HandleFunc("/message", s.messageWsHandler)
 	s.mux = mux
 }

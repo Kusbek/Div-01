@@ -3,9 +3,10 @@ import ChatView from '../chat/view.js'
 import ChatController from '../chat/controller.js'
 
 export default class UserController {
-    constructor(user, view) {
+    constructor(newPost, user, view) {
         this.user = user
         this.view = view
+        this.newPost = newPost
         // this.view.updateAuthButton(this.user.getState())
         this.authenticate()
         this.view.signInUpButton.addEventListener("click", this.handleSignInUpClick.bind(this))
@@ -82,7 +83,7 @@ export default class UserController {
     newChat = () => {
         const model = new Chat()
         const view = new ChatView()
-        const controller = new ChatController(this.user, model, view)
+        const controller = new ChatController(this.newPost,this.user, model, view)
         this.chat = this.newDependency(model, view, controller)
     }
 

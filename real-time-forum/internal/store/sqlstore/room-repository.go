@@ -140,9 +140,10 @@ func (rr *RoomRepository) NewMessage(roomID int, m *model.Message) error {
 //GetMessages ...
 func (rr *RoomRepository) GetMessages(roomID int, from int) ([]*model.Message, error) {
 	rows, err := rr.store.db.Query(`
-		SELECT message_timestamp, message_text, users.id, users.nickname FROM messages
+		SELECT messages.id, message_timestamp, message_text, users.id, users.nickname FROM messages
 		LEFT JOIN users ON messages.author_id = users.id
 		WHERE room_id = $1
+		ORDER BY messages.id DESC
 		LIMIT 10 OFFSET $2
 		`, roomID, from)
 	defer rows.Close()
@@ -154,6 +155,7 @@ func (rr *RoomRepository) GetMessages(roomID int, from int) ([]*model.Message, e
 		user := &model.User{}
 		message := &model.Message{}
 		err := rows.Scan(
+			&message.ID,
 			&message.Timestamp,
 			&message.Text,
 			&user.ID,

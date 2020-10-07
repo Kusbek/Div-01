@@ -20,7 +20,7 @@ func Test_UserRepository(t *testing.T) {
 		log.Fatal(err)
 	}
 	pass := "lopata"
-	user := model.TestUser("kusbek", pass)
+	user := model.TestUser("kusbek_test", pass)
 
 	err = st.User().Create(user)
 	assert.NoError(t, err)

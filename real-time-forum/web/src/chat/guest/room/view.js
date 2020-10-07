@@ -2,13 +2,28 @@ export default class RoomView {
     constructor() {
         this.wall = document.getElementById("feed-wall-wrapper")
     }
+    bindCloseButton = (handler) => {
+        this.closeButton.addEventListener('click', (event) => {
+            console.log("CLOSE ROOM")
+            handler()
+        })
+    }
+
+    close = () => {
+        this.wall.innerHTML = ""
+    }
 
 
     displayRoom = () => {
         this.wall.innerHTML = ""
         const roomWrapper = this.createElement("div", "room-wrapper")
+        const closeWrapper = this.createElement("div", "room-close-wrapper")
+        const closeButton = this.createElement("div", "room-close-button","btn-outline-dark", "btn")
+        this.closeButton = closeButton
+        closeButton.textContent = "Close"
+        closeWrapper.append(closeButton)
         const messagesWrapper = this.createElement("div", "messages-wrapper")
-
+        this.messagesWrapper = messagesWrapper
         const newMessageWrapper = this.createElement("div", "newmessage-wrapper")
         const newMessageInput = this.createElement('textarea', 'newmessage-input')
         this.newMessageInput = newMessageInput
@@ -21,12 +36,12 @@ export default class RoomView {
         newMessageSendButton.id = "send-message-button"
         newMessageSendButton.textContent = "Send"
         newMessageWrapper.append(newMessageSendButton)
-        roomWrapper.append(messagesWrapper, newMessageWrapper)
+        roomWrapper.append(closeWrapper,messagesWrapper, newMessageWrapper)
         this.messagesWrapper = messagesWrapper
         this.wall.append(roomWrapper)
     }
 
-    displayMessage = (msg, self) => {
+    displayMessage = (msg, self, recent) => {
         let messageWrapper
         if (self) {
             messageWrapper = this.createElement("div", "message-wrapper", "darker")
@@ -42,7 +57,12 @@ export default class RoomView {
         const text = this.createElement("div", "message-text")
         text.textContent = msg.text
         messageWrapper.append(timestamp, nickname, text)
-        this.messagesWrapper.append(messageWrapper)
+        if (recent) {
+            this.messagesWrapper.append(messageWrapper)
+        } else {
+            this.messagesWrapper.prepend(messageWrapper)
+        }
+        
     }
 
     createElement(tag, ...classNames) {
@@ -58,6 +78,15 @@ export default class RoomView {
     bindSendMessageButton(handler) {
         this.newMessageSendButton.addEventListener('click', (event) => {
             handler(this.newMessageInput.value)
+        })
+    }
+
+    bindGetOldMessagesScrool(handler) {
+        this.messagesWrapper.addEventListener('scroll', (event) => {
+            
+            if (this.messagesWrapper.scrollTop == 0) {
+                handler()
+            }
         })
     }
 }

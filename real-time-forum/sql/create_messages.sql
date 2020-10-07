@@ -1,4 +1,5 @@
 CREATE TABLE messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   room_id INTEGER NOT NULL,
   author_id INTEGER NOT NULL,
   message_text VARCHAR,

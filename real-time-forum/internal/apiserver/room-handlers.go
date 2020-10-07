@@ -59,7 +59,7 @@ func (s *server) handleGetRoom(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, ok := s.rooms[room.ID]; !ok {
-		s.rooms[room.ID] = &roomManager{ID: room.ID, interlocutors: make([]*interlocutor, 0)}
+		s.rooms[room.ID] = &roomManager{ID: room.ID, interlocutors: make([]*interlocutor, 0), mu: &sync.Mutex{}}
 	}
 	s.respond(w, http.StatusOK, map[string]interface{}{
 		"room": room,

@@ -22,13 +22,51 @@ type interlocutor struct {
 }
 
 func (il *interlocutor) sendMessage(m *model.Message) {
-	if err := il.conn.WriteJSON(m); err != nil {
+	type messageWrapper struct {
+		Message *model.Message `json:"message"`
+	}
+	if err := il.conn.WriteJSON(&messageWrapper{Message: m}); err != nil {
 		fmt.Println(err)
 	}
 }
 
 type inMessage struct {
 	Message string `json:"message"`
+}
+
+func (s *server) handleGetMessages(w http.ResponseWriter, r *http.Request) {
+	session, err := r.Cookie("session_id")
+	if err == http.ErrNoCookie {
+		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		return
+	}
+	_, err = s.cookies.Check(session.Value)
+	if err != nil {
+		s.error(w, http.StatusUnauthorized, err)
+		return
+	}
+	roomID, err := strconv.Atoi(r.URL.Query().Get("room_id"))
+	if err != nil {
+		s.error(w, http.StatusBadRequest, errors.New("room_id is invalid"))
+		return
+	}
+
+	pageNum, err := strconv.Atoi(r.URL.Query().Get("page_num"))
+	if err != nil {
+		s.error(w, http.StatusBadRequest, errors.New("page_num is invalid"))
+		return
+	}
+
+	messages, err := s.store.Room().GetMessages(roomID, 10*pageNum)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	s.respond(w, http.StatusOK, map[string]interface{}{
+		"next":     pageNum + 1,
+		"messages": messages,
+	})
 }
 
 func (s *server) messageWsHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,29 +96,39 @@ func (s *server) messageWsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	messages, err := s.store.Room().GetMessages(roomID, 0)
+	// messages, err := s.store.Room().GetMessages(roomID, 0)
 	il := &interlocutor{
 		roomManager: s.rooms[roomID],
 		room:        s.store.Room(),
 		user:        user,
 		conn:        conn,
 	}
-	fmt.Println(messages[0])
+	il.roomManager.mu.Lock()
 	il.roomManager.interlocutors = append(il.roomManager.interlocutors, il)
-
-	for _, m := range messages {
-		il.sendMessage(m)
-	}
+	il.roomManager.mu.Unlock()
+	// for _, m := range messages {
+	// 	il.sendMessage(m, false)
+	// }
 	go il.monitorMessages(roomID)
 }
 
 func (il *interlocutor) monitorMessages(roomID int) {
+	fmt.Println(il.roomManager.interlocutors)
 	go func() {
 		for {
 			_, d, err := il.conn.ReadMessage()
 			if err != nil {
 				fmt.Println("Error reading message.", err)
-				continue
+				fmt.Println(il.roomManager.interlocutors)
+				il.roomManager.mu.Lock()
+				for i, interlocutor := range il.roomManager.interlocutors {
+					if interlocutor == il {
+						il.roomManager.interlocutors = append(il.roomManager.interlocutors[:i], il.roomManager.interlocutors[i+1:]...)
+					}
+				}
+				fmt.Println(il.roomManager.interlocutors)
+				il.roomManager.mu.Unlock()
+				return
 			}
 			in := &inMessage{}
 			json.Unmarshal(d, in)
@@ -100,5 +148,21 @@ func (il *interlocutor) monitorMessages(roomID int) {
 				i.sendMessage(msg)
 			}
 		}
+
 	}()
+
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case <-ctx.Done():
+	// 			for i, interlocutor := range il.roomManager.interlocutors {
+	// 				if interlocutor == il {
+	// 					il.roomManager.interlocutors = append(il.roomManager.interlocutors[:i], il.roomManager.interlocutors[i+1:]...)
+	// 				}
+	// 			}
+	// 			return
+	// 		}
+	// 	}
+	// }()
+
 }
