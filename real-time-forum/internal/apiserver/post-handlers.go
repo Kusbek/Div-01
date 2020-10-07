@@ -66,7 +66,8 @@ func (s *server) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	newPost := &model.Post{
 		Author: &model.User{
-			ID: user.ID,
+			ID:       user.ID,
+			Nickname: user.Nickname,
 		},
 		Title:    d.Title,
 		Text:     d.Text,

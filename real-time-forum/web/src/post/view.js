@@ -41,8 +41,28 @@ export default class PostView {
         titleWrapper.append(title)
         textWrapper.append(text)
         saverWrapper.append(saveButton)
-        feedCard.append(titleWrapper, textWrapper, saverWrapper)
+        feedCard.append(this.createCategories(), titleWrapper, textWrapper, saverWrapper)
         this.feedWall.insertBefore(feedCard, this.feedWall.children[1])
+    }
+
+    createCategories() {
+        const selectWrapper = this.createElement('div', 'post-template-wrapper')
+        const catSelect = this.createElement('select', "post-template-select")
+        catSelect.append(
+            this.createSelectOption("Game", "game"),
+            this.createSelectOption("Movie", "movie"),
+            this.createSelectOption("News", "news")
+        )
+
+        selectWrapper.append(catSelect)
+        return selectWrapper
+    }
+
+    createSelectOption(textContent, value) {
+        const option = this.createElement('option')
+        option.textContent = textContent
+        option.value = value
+        return option
     }
 
 
@@ -173,9 +193,11 @@ export default class PostView {
             const feedCard = event.target.parentElement.parentElement
             const title = feedCard.querySelector(".post-template-input").value
             const text = feedCard.querySelector(".post-template-textarea").value
+            const category = feedCard.querySelector(".post-template-select").value
             const body = {
                 title: title,
                 text: text,
+                category: category,
             }
             handler(body)
         })

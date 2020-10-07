@@ -41,6 +41,8 @@ export default class PostController {
             this.postView.closePostTemplate()
             this.postModel.posts.unshift(createdPost)
             this.postView.displayPost(createdPost)
+            this.postView.bindUnfoldComments(this.handleCommentsClick)
+            this.postView.bindNewCommentButton(this.handleNewCommentClick)
         }).catch((error)=>{
             this.postView.displayLoginWarning()
         })
