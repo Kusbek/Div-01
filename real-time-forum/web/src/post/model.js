@@ -6,8 +6,11 @@ export default class Post {
         this.comments = {}
     }
 
-    async getPostsFromServer() {
-        const posts = await fetch(this.postURL, {
+    async getPostsFromServer(category) {
+        if (category == undefined || category == "") {
+            category = "all"
+        }
+        const posts = await fetch(this.postURL + `?category=${category}`, {
             method: "GET",
         }).then((response) => {
             
@@ -34,6 +37,7 @@ export default class Post {
     }
 
     setPosts(posts) {
+        this.posts = []
         for (let post of posts) {
             this.posts.push(post)
         }

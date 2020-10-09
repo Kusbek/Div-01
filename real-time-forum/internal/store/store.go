@@ -31,6 +31,7 @@ type PostRepository interface {
 	GetAll() ([]*model.Post, error)
 	Create(post *model.Post) error
 	Delete(id int) error
+	Get(category string) ([]*model.Post, error)
 }
 
 //UserRepository ...
@@ -39,4 +40,5 @@ type UserRepository interface {
 	Find(nickmail string) (*model.User, error)
 	Delete(id int) error
 	GetByID(id int) (*model.User, error)
+	Exists(nickname, email string) (bool, error)
 }

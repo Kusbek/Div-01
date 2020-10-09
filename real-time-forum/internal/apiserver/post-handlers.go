@@ -4,6 +4,7 @@ import (
 	"DIV-01/real-time-forum/internal/model"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -19,7 +20,25 @@ func (s *server) handlePosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) handleGetPosts(w http.ResponseWriter, r *http.Request) {
-	posts, err := s.store.Post().GetAll()
+
+	category := r.URL.Query().Get("category")
+	if category == "" {
+		category = "all"
+	}
+	fmt.Println(category)
+	if category == "all" {
+		posts, err := s.store.Post().GetAll()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+		}
+
+		s.respond(w, http.StatusOK, map[string]interface{}{
+			"posts": posts,
+		})
+		return
+	}
+
+	posts, err := s.store.Post().Get(category)
 	if err != nil {
 		s.error(w, http.StatusInternalServerError, err)
 	}

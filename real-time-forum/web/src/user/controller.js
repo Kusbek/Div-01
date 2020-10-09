@@ -21,7 +21,6 @@ export default class UserController {
             this.newChat()
         }).catch((error) => {
             this.view.updateSignInUpButton(this.user.getUser())
-            
             console.log(error)
         })
     }
@@ -34,7 +33,7 @@ export default class UserController {
                 this.view.updateSignInUpButton(user)
                 this.deleteChat()
             }).catch((error) => {
-                console.log(error)
+                alert(error)
             })
         } else {
             this.view.toggleSignInUpModal()
@@ -76,7 +75,7 @@ export default class UserController {
             this.view.toggleSignInUpModal()
             this.newChat()
         }).catch((error) => {
-            console.log(error)
+            alert(error)
         })
     }
 
@@ -89,7 +88,6 @@ export default class UserController {
 
 
     deleteChat = () => {
-        console.log(this.chat)
         this.chat.controller.delete()
         this.chat = undefined
     }

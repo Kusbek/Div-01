@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"DIV-01/real-time-forum/internal/model"
 	"DIV-01/real-time-forum/internal/store"
+	"database/sql"
 )
 
 //User ...
@@ -101,4 +102,23 @@ func (ur *UserRepository) GetByID(id int) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+//Exists ...
+func (ur *UserRepository) Exists(nickname, email string) (bool, error) {
+	var exists bool
+	err := ur.store.db.QueryRow(
+		`SELECT 1 FROM users WHERE nickname IN ($1,$2) OR email IN ($1,$2)`,
+		nickname, email).
+		Scan(
+			&exists,
+		)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return exists, nil
 }

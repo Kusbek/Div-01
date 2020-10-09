@@ -125,6 +125,17 @@ func (s *server) signUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	exists, err := s.store.User().Exists(user.Nickname, user.Email)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if exists {
+		s.error(w, http.StatusConflict, errors.New("User already exists"))
+		return
+	}
+
 	err = s.store.User().Create(user)
 	if err != nil {
 		s.error(w, http.StatusInternalServerError, err)

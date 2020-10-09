@@ -1,8 +1,15 @@
 export default class PostView {
     constructor() {
         this.feedWall = document.getElementById("feed-wall-wrapper")
-        this.displayCreatePostButton()
     }
+
+    bindSelectCategory = (handler) => {
+        let catSelect = document.getElementById("post-category")
+        catSelect.addEventListener("change", (event)=>{
+            handler(catSelect.value)
+        })
+    }
+
 
     displayCreatePostButton() {
         let btnWrapper = this.createElement("div", "create-post-button-wrapper")
@@ -10,6 +17,16 @@ export default class PostView {
         btn.id = "create-post-button"
         btn.textContent = "Create Post"
         btnWrapper.append(btn)
+
+        const catSelect = this.createElement('select', "post-category-select")
+        catSelect.id = "post-category"
+        catSelect.append(
+            this.createSelectOption("All", "all"),
+            this.createSelectOption("Game", "game"),
+            this.createSelectOption("Movie", "movie"),
+            this.createSelectOption("News", "news")
+        )
+        btnWrapper.append(btn,catSelect)
         this.btnWrapper = btnWrapper
         this.feedWall.append(btnWrapper)
     }
@@ -107,6 +124,7 @@ export default class PostView {
 
 
     displayPosts(posts) {
+        this.displayCreatePostButton()
         posts.forEach(post => {
             this.displayPost(post)
         });

@@ -88,8 +88,8 @@ export default class User {
             method: 'POST',
         }).then((response) => {
             if (!response.ok) {
-                if (response.status == 403) {
-                    return Promise.reject(Error("No such user"))
+                if (response.status == 409) {
+                    return Promise.reject(Error("User Already Exists"))
                 }
                 return Promise.reject(Error(response.statusText))
             }
@@ -110,6 +110,7 @@ export default class User {
             method: 'POST',
         }).then((response) => {
             if (!response.ok) {
+
                 return Promise.reject(Error(response.statusText))
             }
 

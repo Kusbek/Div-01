@@ -4,19 +4,22 @@ export default class PostController {
         this.postModel = postModel
         this.postView = postView
         this.postTemplateIsDisplayed = false
-        this.displayPosts()
+        this.displayPosts("all")
 
-        this.postView.bindCreatePostButton(this.handleCreatePostClick)
+
 
     }
 
-    displayPosts() {
-        this.postModel.getPostsFromServer().then((posts) => {
+    displayPosts = (category) => {
+        this.postView.feedWall.innerHTML = ""
+        this.postModel.getPostsFromServer(category).then((posts) => {
             this.postView.displayPosts(posts)
             this.postView.bindUnfoldComments(this.handleCommentsClick)
             this.postView.bindNewCommentButton(this.handleNewCommentClick)
+            this.postView.bindCreatePostButton(this.handleCreatePostClick)
+            this.postView.bindSelectCategory(this.displayPosts)
         }).catch((error) => {
-            console.log(error)
+            alert(error)
         })
     }
 
@@ -33,7 +36,6 @@ export default class PostController {
         } else {
             this.postView.displayLoginWarning()
         }
-
     }
 
     handleSavePost = (body) => {
