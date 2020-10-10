@@ -41,4 +41,5 @@ type UserRepository interface {
 	Delete(id int) error
 	GetByID(id int) (*model.User, error)
 	Exists(nickname, email string) (bool, error)
+	GetUsers(id int) ([]*model.User, error)
 }

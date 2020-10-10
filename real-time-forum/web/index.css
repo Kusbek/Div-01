@@ -144,6 +144,10 @@ body {
   cursor: pointer;
 }
 
+.guest-online {
+  background-color: rgb(62, 150, 40);
+}
+
 .messages-wrapper {
   height: 650px;
   overflow-y: scroll;

@@ -1,5 +1,6 @@
 export default class RoomController {
-    constructor(newPost, userModel,room, roomView) {
+    constructor(guestController, newPost, userModel,room, roomView) {
+        this.guestController = guestController
         this.newPost = newPost
         this.userModel = userModel
         this.model = room
@@ -47,6 +48,7 @@ export default class RoomController {
     }
 
     handleSendMessage = (msg) => {
+        this.guestController.toTop()
         this.model.sendMessage(msg)
     }
 

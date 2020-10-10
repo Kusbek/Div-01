@@ -122,3 +122,80 @@ func (ur *UserRepository) Exists(nickname, email string) (bool, error) {
 
 	return exists, nil
 }
+
+//GetAll ...
+func (ur *UserRepository) GetAll() ([]*model.User, error) {
+	rows, err := ur.store.db.Query(`SELECT id, nickname FROM users`)
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]*model.User, 0)
+	for rows.Next() {
+		user := &model.User{}
+		err = rows.Scan(&user.ID, &user.Nickname)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
+//GetUsers ...
+func (ur *UserRepository) GetUsers(id int) ([]*model.User, error) {
+	users := make([]*model.User, 0)
+	rows, err := ur.store.db.Query(`
+	SELECT users.id, users.nickname from users 
+	JOIN 
+		(SELECT user_id, room_id FROM room_participants WHERE room_id IN 
+			(SELECT room_id FROM room_participants WHERE user_id = $1 GROUP BY room_id) AND user_id != $1) 
+	as open_rooms ON users.id = open_rooms.user_id 
+	LEFT JOIN
+		(SELEct * FROM (SELECT room_id,message_timestamp from messages WHERE room_id in 
+			(SELECT room_id FROM room_participants WHERE room_id IN 
+				(SELECT room_id FROM room_participants WHERE user_id = $1 GROUP BY room_id) AND user_id != $1) ORDER BY message_timestamp DESC) 
+				GROUP BY room_id) 
+	as temp_table ON open_rooms.room_id = temp_table.room_id
+	WHERE id != $1 ORDER BY temp_table.message_timestamp DESC
+	`, id)
+
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		user := &model.User{}
+		err = rows.Scan(&user.ID, &user.Nickname)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	rows, err = ur.store.db.Query(`
+	SELECT id, nickname FROM users WHERE id NOT IN (SELECT user_id FROM room_participants WHERE room_id IN (SELECT room_id FROM room_participants WHERE user_id = $1 GROUP BY room_id) AND user_id != $1) AND id != $1 ORDER BY nickname ASC;
+	`, id)
+
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		user := &model.User{}
+		err = rows.Scan(&user.ID, &user.Nickname)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}

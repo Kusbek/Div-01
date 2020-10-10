@@ -23,14 +23,15 @@ type guest struct {
 
 func (s *server) monitorDeleteGuestChan() {
 	for {
-		deletedG := <-s.deleteGuestChan
+		dGuest := <-s.deleteGuestChan
 		s.mu.Lock()
-		for i, guest := range s.guests {
-			if guest == deletedG {
-				s.guests = append(s.guests[:i], s.guests[i+1:]...)
+		for userID, guest := range s.guests {
+			if guest == dGuest {
+				// s.guests = append(s.guests[:i], s.guests[i+1:]...)
+				delete(s.guests, userID)
 				continue
 			}
-			guest.ch <- &msg{"delete", deletedG.user}
+			guest.ch <- &msg{"offline", dGuest.user}
 		}
 		s.mu.Unlock()
 	}
@@ -87,6 +88,7 @@ func (s *server) chatWsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
 	if err != nil {
 		s.error(w, http.StatusInternalServerError, errors.New("Could not open websocket connection"))
+		return
 	}
 
 	g := &guest{
@@ -94,12 +96,32 @@ func (s *server) chatWsHandler(w http.ResponseWriter, r *http.Request) {
 		conn: conn,
 		ch:   make(chan *msg, 10),
 	}
-	s.mu.Lock()
-	for _, gu := range s.guests {
-		g.sendMessage(&msg{"add", gu.user})
-		gu.ch <- &msg{"add", g.user}
+
+	allusers, err := s.store.User().GetUsers(user.ID)
+	if err != nil {
+		s.error(w, http.StatusInternalServerError, err)
+		return
 	}
-	s.guests = append(s.guests, g)
+	fmt.Println(allusers)
+	s.mu.Lock()
+
+	for _, u := range allusers {
+		if gu, ok := s.guests[u.ID]; ok {
+			gu.ch <- &msg{"online", g.user}
+			g.sendMessage(&msg{"online", u})
+		} else {
+			g.sendMessage(&msg{"offline", u})
+		}
+	}
+	s.guests[g.user.ID] = g
 	s.mu.Unlock()
+	// s.mu.Lock()
+	// for _, gu := range s.guests {
+	// 	// g.sendMessage(&msg{"add", gu.user})
+	// 	gu.ch <- &msg{"add", g.user}
+	// }
+
+	// s.mu.Unlock()
+
 	go g.monitorClient(s.deleteGuestChan)
 }

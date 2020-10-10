@@ -11,6 +11,11 @@ export default class GuestController {
         this.displayGuest()
     }
 
+    updateState = (action) => {
+        this.model.action = action
+        this.view.updateState(this.model.get())
+    }
+
     displayGuest = () => {
         this.view.display(this.model.get())
         this.view.bindHandleClick(this.handleClick)
@@ -29,7 +34,7 @@ export default class GuestController {
     handleNewRoom = (r) => {
         const room = new Room(r)
         const roomView = new RoomView()
-        const roomController = new RoomController(this.newPost, this.userModel, room, roomView)
+        const roomController = new RoomController(this,this.newPost, this.userModel, room, roomView)
 
         return {
             model: room,
@@ -46,5 +51,9 @@ export default class GuestController {
         if (this.room != undefined && this.room != null) {
             this.room.controller.closeSocket()
         }
+    }
+
+    toTop = () => {
+        this.view.toTop()
     }
 }

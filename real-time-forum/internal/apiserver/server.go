@@ -21,7 +21,7 @@ type server struct {
 	store           store.Store
 	cookies         session.Cookie
 	rooms           map[int]*roomManager
-	guests          []*guest
+	guests          map[int]*guest
 	deleteGuestChan chan *guest
 	mu              *sync.Mutex
 }
@@ -31,7 +31,7 @@ func NewServer(st store.Store) Server {
 	s := &server{
 		cookies:         session.New(),
 		store:           st,
-		guests:          make([]*guest, 0),
+		guests:          make(map[int]*guest),
 		deleteGuestChan: make(chan *guest, 10),
 		rooms:           make(map[int]*roomManager),
 		mu:              &sync.Mutex{},
@@ -39,7 +39,15 @@ func NewServer(st store.Store) Server {
 
 	s.newMux()
 	go s.monitorDeleteGuestChan()
+	go s.monitorOnlineGuests()
 	return s
+}
+
+func (s *server) monitorOnlineGuests() {
+	for {
+		time.Sleep(2 * time.Second)
+		fmt.Println(s.guests)
+	}
 }
 
 func (s *server) newMux() {

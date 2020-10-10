@@ -1,11 +1,13 @@
 export default class PostView {
     constructor() {
         this.feedWall = document.getElementById("feed-wall-wrapper")
+        this.selected = "all"
     }
 
     bindSelectCategory = (handler) => {
         let catSelect = document.getElementById("post-category")
         catSelect.addEventListener("change", (event)=>{
+            this.selected = catSelect.value
             handler(catSelect.value)
         })
     }
@@ -26,6 +28,7 @@ export default class PostView {
             this.createSelectOption("Movie", "movie"),
             this.createSelectOption("News", "news")
         )
+        catSelect.value = this.selected
         btnWrapper.append(btn,catSelect)
         this.btnWrapper = btnWrapper
         this.feedWall.append(btnWrapper)

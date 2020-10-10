@@ -3,7 +3,7 @@ import GuestView from './guest/view.js'
 import GuestController from './guest/controller.js'
 
 export default class ChatController {
-    constructor(newPost,userModel, model, view) {
+    constructor(newPost, userModel, model, view) {
         this.userModel = userModel
         this.model = model
         this.view = view
@@ -19,18 +19,18 @@ export default class ChatController {
 
 
     initGuestsSocket = () => {
-        this.model.monitorGuestsInServer(this.handleNewGuest, this.handleDeleteGuest)
-        
+        this.model.monitorGuestsInServer(this.handleNewGuest, this.updateState)
+
     }
 
-    closeAllRooms = ()=> {
+    closeAllRooms = () => {
         this.model.closeAllRooms()
     }
 
-    handleNewGuest = (user) => {
-        const guestModel = new Guest(user)
+    handleNewGuest = (msg) => {
+        const guestModel = new Guest(msg)
         const guestView = new GuestView(this.view.chatWall)
-        const guestController = new GuestController(this.closeAllRooms,this.newPost,this.userModel,guestModel, guestView)
+        const guestController = new GuestController(this.closeAllRooms, this.newPost, this.userModel, guestModel, guestView)
         return {
             model: guestModel,
             view: guestView,
@@ -40,5 +40,9 @@ export default class ChatController {
 
     handleDeleteGuest = (guest) => {
         guest.controller.delete()
+    }
+
+    updateState = (guest, action) => {
+        guest.controller.updateState(action)
     }
 }

@@ -6,7 +6,7 @@ export default class Chat {
         this.wsUrl = "ws://localhost:8082/chat"
     }
 
-    monitorGuestsInServer(newGuestHandler, deleteGuestHandler) {
+    monitorGuestsInServer(newGuestHandler, updateState) {
         const socket = new WebSocket(this.wsUrl + `?`)
         socket.onopen = () => {
             console.log("Opened Socket")
@@ -16,14 +16,22 @@ export default class Chat {
             let msg = JSON.parse(e.data)
 
             let action = msg.action
-            if (action == "add") {
-                let guest = newGuestHandler(msg.user)
-                this.guests[msg.user.id] = guest
+
+            if (msg.user.id in this.guests) {
+                updateState(this.guests[msg.user.id], action)
             } else {
-                let g = this.guests[msg.user.id]
-                deleteGuestHandler(g)
-                delete this.guests[msg.user.id]
+                let guest = newGuestHandler(msg)
+                this.guests[msg.user.id] = guest
             }
+            
+            // if (action == "online") {
+            //     let guest = newGuestHandler(msg.user)
+            //     this.guests[msg.user.id] = guest
+            // } else {
+            //     let g = this.guests[msg.user.id]
+            //     deleteGuestHandler(g)
+            //     delete this.guests[msg.user.id]
+            // }
             // console.log(this.guests)
         }
 

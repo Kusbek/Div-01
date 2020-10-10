@@ -1,14 +1,17 @@
 export default class Guest {
-    constructor({id, nickname}) {
-        this.id = id
-        this.nickname = nickname
+    constructor({user, action}) {
+        console.log(action)
+        this.id = user.id
+        this.nickname = user.nickname
+        this.action = action
         this.getRoomUrl = "/room"
     }
 
     get = () => {
         return {
             id: this.id,
-            nickname: this.nickname
+            nickname: this.nickname,
+            action: this.action
         }
     }
 
