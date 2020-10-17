@@ -241,15 +241,14 @@ export default class PostView {
         content.append(
             this.displayTitle(title),
             this.displayText(text),
-            this.displayText(nComments)
+            this.displayCommentsCount(nComments)
         )
 
         const additional = createElement("div", "additional")
         additional.append(
-            this.displayAuthor(author),
+            this.displayAuthorCard(author),
+            this.displayAuthorDetailed(author)
         )
-
-
         container.append(additional)
         container.append(content)
         this.postsContainer.append(container)
@@ -264,41 +263,39 @@ export default class PostView {
         return wrapper
     }
 
-    displayAuthor = (author) => {
-        const authorInfo = createElement("div", "author-info")
-        
-        //card
+    displayAuthorCard = (author) => {      
         const authorCard = createElement("div", "author-card")
-        const nickname = createElement("div", "author-nickname")
+        const nickname = createElement("div", "author-nickname", "center")
         nickname.textContent = `${author.nickname}`
-        const age = createElement("div", "author-age")
-        age.textContent = `AGE: ${26}`
+        const age = createElement("div", "author-age", "center")
+        age.textContent = `AGE: 26`
         authorCard.append(nickname,age)
+        return authorCard
+    }
 
-
+    displayAuthorDetailed = (author) => {
         //detailed
         const detailedInfo = createElement("div", "detailed-info")
 
         const fullname = createElement("h1")
-        fullname.textContent = `${"Bekarys"} ${"Kuspan"}`
+        fullname.textContent = `${author.first_name} ${author.last_name}`
 
         const email = createElement("div", "info")
         const emailSpan = createElement("span")
-        emailSpan.textContent = `Email: ${"kusbek1994@gmail.com"}`
+        emailSpan.textContent = `Email: ${author.email}`
         email.append(emailSpan)
 
         const sex = createElement("div", "info")
         const sexSpan = createElement("span")
-        sexSpan.textContent = `Sex: ${"A lot"}`
+        sexSpan.textContent = `Sex: ${author.gender}`
         sex.append(sexSpan)
 
         detailedInfo.append(fullname, email,sex)
-        authorInfo.append(authorCard,detailedInfo)
-        return authorInfo
+        return detailedInfo
     }
 
     displayText = (text) => {
-        const wrapper = createElement("div", "post-text")
+        const wrapper = createElement("p", "post-text")
         const span = createElement("span", "post-text-span")
         span.textContent = text
         wrapper.append(span)
@@ -306,10 +303,19 @@ export default class PostView {
     }
 
     displayCommentsCount = (n) => {
+
         const wrapper = createElement("div", "comment-count")
         const span = createElement("span", "comment-count-span")
         span.textContent = `${n} comments`
         wrapper.append(span)
+        this.commentCount = wrapper
         return wrapper
+    }
+
+
+    bindCommentCount = (handler) => {
+        this.commentCount.addEventListener("click", (event)=> {
+            handler()
+        })
     }
 }

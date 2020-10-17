@@ -24,7 +24,18 @@ func (s *Store) Post() store.PostRepository {
 //GetAll ...
 func (pr *PostRepository) GetAll() ([]*model.Post, error) {
 	rows, err := pr.store.db.Query(`
-		SELECT posts.id, users.id, users.nickname, posts.title, posts.post_text, posts.comments FROM posts
+		SELECT 
+			posts.id,
+			users.id,
+			users.nickname,
+			users.first_name, 
+			users.last_name, 
+			users.email, 
+			users.gender,
+			posts.title, 
+			posts.post_text, 
+			posts.comments 
+		FROM posts
 		LEFT JOIN users ON posts.author_id = users.id`)
 	defer rows.Close()
 	if err != nil {
@@ -38,6 +49,10 @@ func (pr *PostRepository) GetAll() ([]*model.Post, error) {
 			&post.ID,
 			&user.ID,
 			&user.Nickname,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Gender,
 			&post.Title,
 			&post.Text,
 			&post.Comments,

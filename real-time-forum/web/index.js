@@ -53,7 +53,6 @@ class MainModel {
         if (category === undefined || category === "") {
             category = "all"
         }
-
         const posts = await fetch(this.postURL + `?category=${category}`, {
             method: "GET",
         }).then((response) => {
@@ -114,8 +113,8 @@ class MainController {
 
     getPosts = () => {
         this.view.createPostsContainer()
-        this.model.getPosts("all").then((posts) => {
-            console.log(posts)
+        this.model.getPosts("all").then((postControllers) => {
+            this.postControllers = postControllers
         })
     }
 

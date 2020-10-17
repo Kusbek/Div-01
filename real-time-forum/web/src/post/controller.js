@@ -104,9 +104,15 @@ export default class PostController {
         this.model = postModel
         this.view = postView
         this.displayPost()
+        this.view.bindCommentCount(this.handleCommentCountClick)
     }
 
     displayPost = () => {
         this.view.displayPost(this.model.get())
     }
+
+    handleCommentCountClick = () => {
+        console.log("GAVNOJUI")
+    }
+
 }

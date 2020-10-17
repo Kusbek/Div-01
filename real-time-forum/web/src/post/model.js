@@ -138,12 +138,12 @@
 
 
 export default class Post {
-    constructor({ id, author, title, text, nComments, category }) {
+    constructor({ id, author, title, text, comments, category }) {
         this.id = id
         this.author = author
         this.title = title
         this.text = text
-        this.nComments = nComments
+        this.nComments = comments
         this.category = category
     }
 
