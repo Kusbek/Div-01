@@ -4,6 +4,7 @@ import (
 	"DIV-01/real-time-forum/internal/model"
 	"DIV-01/real-time-forum/internal/store"
 	"context"
+	"time"
 )
 
 //RoomRepository ...
@@ -168,4 +169,15 @@ func (rr *RoomRepository) GetMessages(roomID int, from int) ([]*model.Message, e
 		messages = append(messages, message)
 	}
 	return messages, nil
+}
+
+//GetLastMessageTimestamp ...
+func (rr *RoomRepository) GetLastMessageTimestamp(roomID int) (*time.Time, error) {
+	timestamp := &time.Time{}
+	row := rr.store.db.QueryRow(`SELECT message_timestamp from messages WHERE room_id = $1 ORDER BY message_timestamp DESC LIMIT 1`, roomID)
+	err := row.Scan(timestamp)
+	if err != nil {
+		return nil, err
+	}
+	return timestamp, nil
 }

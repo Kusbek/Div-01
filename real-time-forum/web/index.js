@@ -1,54 +1,35 @@
-// import User from './src/user/model.js'
-// import UserView from './src/user/view.js'
-// import UserController from './src/user/controller.js'
+import User from './src/user/model.js'
+import UserView from './src/user/view.js'
+import UserController from './src/user/controller.js'
 
 import Post from './src/post/model.js'
 import PostView from './src/post/view.js'
 import PostController from './src/post/controller.js'
 
 
-
-// class Main {
-//     constructor() {
-//         const userModel = new User()
-//         this.newPost(userModel)
-//         const userView = new UserView()
-//         const userController = new UserController(this.newPost, userModel, userView)
-
-//     }
+import Chat from './src/chat/model.js'
+import ChatView from './src/chat/view.js'
+import ChatController from './src/chat/controller.js'
+import { createElement, displayModal } from './src/utils/utils.js'
 
 
+class MainView {
+    constructor() {
+        this.wall = document.getElementById("wall")
 
-//     newPost = (user) => {
-//         const post = new Post()
-//         const postView = new PostView()
-//         const postController = new PostController(user, post, postView)
-//         this.post = this.newDependency(post,postView,postController)
-//     }
+    }
 
-
-
-//     newDependency = (model, view, controller) => {
-//         return {
-//             model: model,
-//             view: view,
-//             controller: controller,
-//         }
-//     }
-// }
-
-
-
-// const main = new Main()
-// window.user = user
-// window.controller = controller
-
+    createPostsContainer = () => {
+        const postsContainer = createElement("div")
+        postsContainer.id = "posts-container"
+        this.wall.append(postsContainer)
+    }
+}
 class MainModel {
     constructor() {
         this.authURL = "/auth"
         this.postURL = "/post"
     }
-
     async getPosts(category) {
         if (category === undefined || category === "") {
             category = "all"
@@ -64,34 +45,36 @@ class MainModel {
             if (json.error != null || json.error != undefined) {
                 return Promise.reject(Error(json.error))
             }
-
-            let posts = []
-            json.posts.forEach((p) => {
-                const post = new PostController(new Post(p), new PostView())
-                posts.push(post)
-            })
-            return posts
+            return json.posts
         }).catch((e) => {
             displayModal(e)
         })
         return posts
     }
 
-}
+    async authorize() {
+        const user = await fetch(this.authURL).then((response) => {
+            if (!response.ok) {
+                if (response.status == 401) {
+                    return response.json()
+                }
+                return Promise.reject(Error(response.statusText))
+            }
+            return response.json()
+        }).then((json) => {
+            if (json.error != null || json.error != undefined) {
+                return {}
+            }
+            return json.user
+        }).catch((e) => {
+            displayModal(e)
+            return {}
+        })
 
-class MainView {
-    constructor() {
-        this.wall = document.getElementById("wall")
-
+        return user
     }
 
-    createPostsContainer = () => {
-        const postsContainer = createElement("div")
-        postsContainer.id = "posts-container"
-        this.wall.append(postsContainer) 
-    }
 }
-
 
 class MainController {
     constructor(model, view) {
@@ -100,38 +83,47 @@ class MainController {
         // this.auth()
 
         this.posts = []
+        this.auth()
         this.getPosts()
+        this.chatController = new ChatController(new Chat(), new ChatView())
+    }
+
+    update = () => {
+        this.userController.createVisitorButtons()
+        this.userController.createUserInfo()
+        this.updateChat()
+
+    }
+
+    updateChat = () => {
+        let user = this.userController.model.getUser()
+        if (user.isLoggedIn) {
+            this.chatController.monitorGuests()
+        } else {
+            this.chatController.closeChat()
+        }
     }
 
     auth = () => {
-        this.model.authorize(this.userHandler)
+        this.model.authorize().then((user) => {
+            this.userController = new UserController(new User(user), new UserView(), this.update)
+            this.update()
+        })
     }
 
-    userHandler = (user) => {
-        console.log(user)
-    }
 
     getPosts = () => {
         this.view.createPostsContainer()
-        this.model.getPosts("all").then((postControllers) => {
+        this.model.getPosts("all").then((posts) => {
+            let postControllers = []
+            posts.forEach((p) => {
+                const post = new PostController(new Post(p), new PostView())
+                posts.push(post)
+            })
             this.postControllers = postControllers
         })
     }
 
-}
-const displayModal = (msg) => {
-    alert(msg)
-}
-
-
-const createElement = (tag, ...classNames) => {
-    const element = document.createElement(tag)
-    if (classNames.length != 0) {
-        classNames.forEach((className) => {
-            element.classList.add(className)
-        })
-    }
-    return element
 }
 
 

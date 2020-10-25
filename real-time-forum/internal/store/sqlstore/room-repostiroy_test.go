@@ -49,3 +49,18 @@ func Test_RoomRepository(t *testing.T) {
 	// _, err = st.Room().GetRoomID(1, 10000)
 	// assert.Equal(t, sql.ErrNoRows, err)
 }
+
+func Test_GetLastMessage(t *testing.T) {
+	st, err := Start(sqlOpt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	user1, user2 := 1, 2
+
+	room, err := st.Room().GetRoom(user1, user2)
+	assert.NoError(t, err)
+
+	timestamp, err := st.Room().GetLastMessageTimestamp(room.ID)
+	fmt.Println(timestamp)
+	assert.NoError(t, err)
+}

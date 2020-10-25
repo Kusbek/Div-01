@@ -30,7 +30,7 @@ func (ur *UserRepository) Create(user *model.User) error {
 	}
 
 	res, err := ur.store.db.Exec(
-		`INSERT INTO users (nickname, email, gender, first_name, last_name, password)
+		`INSERT INTO users (nickname, email, gender, first_name, last_name, password, age)
 		 VALUES($1,$2,$3,$4,$5,$6)`,
 		user.Nickname,
 		user.Email,
@@ -38,6 +38,7 @@ func (ur *UserRepository) Create(user *model.User) error {
 		user.FirstName,
 		user.LastName,
 		user.Password,
+		user.Age,
 	)
 	if err != nil {
 		return err
@@ -74,6 +75,7 @@ func (ur *UserRepository) Find(nickmail string) (*model.User, error) {
 			&user.FirstName,
 			&user.LastName,
 			&user.Password,
+			&user.Age,
 		)
 	if err != nil {
 		return nil, err
@@ -96,6 +98,7 @@ func (ur *UserRepository) GetByID(id int) (*model.User, error) {
 			&user.FirstName,
 			&user.LastName,
 			&user.Password,
+			&user.Age,
 		)
 	if err != nil {
 		return nil, err

@@ -226,7 +226,7 @@
 // }
 
 
-import {createElement} from '../utils/utils.js'
+import { createElement } from '../utils/utils.js'
 
 
 //https://codepen.io/alvaromontoro/pen/ebPEWb
@@ -235,8 +235,18 @@ export default class PostView {
         this.postsContainer = document.getElementById("posts-container")
     }
 
-    displayPost = ({title, text, author, nComments}) => {
+    displayPost = (post) => {
+        const postWrapper = createElement("div", "post-wrapper")
+        postWrapper.append(
+            this.displayPostContainer(post),
+            this.addCommentSection()
+        )
+        this.postsContainer.append(postWrapper)
+    }
+
+    displayPostContainer = ({ title, text, author, nComments }) => {
         const container = createElement("div", "post-container")
+        this.postContainer = container
         const content = createElement("div", "post-content")
         content.append(
             this.displayTitle(title),
@@ -249,9 +259,9 @@ export default class PostView {
             this.displayAuthorCard(author),
             this.displayAuthorDetailed(author)
         )
-        container.append(additional)
-        container.append(content)
-        this.postsContainer.append(container)
+
+        container.append(additional, content)
+        return container
     }
 
     displayTitle = (title) => {
@@ -263,13 +273,13 @@ export default class PostView {
         return wrapper
     }
 
-    displayAuthorCard = (author) => {      
+    displayAuthorCard = (author) => {
         const authorCard = createElement("div", "author-card")
         const nickname = createElement("div", "author-nickname", "center")
         nickname.textContent = `${author.nickname}`
         const age = createElement("div", "author-age", "center")
         age.textContent = `AGE: 26`
-        authorCard.append(nickname,age)
+        authorCard.append(nickname, age)
         return authorCard
     }
 
@@ -290,7 +300,7 @@ export default class PostView {
         sexSpan.textContent = `Sex: ${author.gender}`
         sex.append(sexSpan)
 
-        detailedInfo.append(fullname, email,sex)
+        detailedInfo.append(fullname, email, sex)
         return detailedInfo
     }
 
@@ -303,7 +313,6 @@ export default class PostView {
     }
 
     displayCommentsCount = (n) => {
-
         const wrapper = createElement("div", "comment-count")
         const span = createElement("span", "comment-count-span")
         span.textContent = `${n} comments`
@@ -314,8 +323,26 @@ export default class PostView {
 
 
     bindCommentCount = (handler) => {
-        this.commentCount.addEventListener("click", (event)=> {
-            handler()
+        this.commentCount.addEventListener("click", (event) => {
+            handler(this.commentSection.style.display)
         })
+    }
+
+
+    addCommentSection = () => {
+        const commentSection = createElement("div", "comment-section")
+        commentSection.style.display = "none"
+        this.commentSection = commentSection
+        return commentSection
+    }
+
+
+    displayCommentSection = () => {
+        this.commentSection.style.display = "block"
+    }
+
+    closeCommentSection = () => {
+        this.commentSection.style.display = "none"
+        this.commentSection.innerHTML = ""
     }
 }

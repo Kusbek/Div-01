@@ -1,6 +1,9 @@
 package store
 
-import "DIV-01/real-time-forum/internal/model"
+import (
+	"DIV-01/real-time-forum/internal/model"
+	"time"
+)
 
 //Store ...
 type Store interface {
@@ -18,6 +21,7 @@ type RoomRepository interface {
 	DeleteRoom(id int) error
 	NewMessage(roomID int, m *model.Message) error
 	GetMessages(roomID int, from int) ([]*model.Message, error)
+	GetLastMessageTimestamp(roomID int) (*time.Time, error)
 }
 
 //CommentRepository ...
@@ -41,5 +45,6 @@ type UserRepository interface {
 	Delete(id int) error
 	GetByID(id int) (*model.User, error)
 	Exists(nickname, email string) (bool, error)
+	GetAll() ([]*model.User, error)
 	GetUsers(id int) ([]*model.User, error)
 }

@@ -2,18 +2,21 @@ package apiserver
 
 import (
 	"DIV-01/real-time-forum/internal/model"
+	"DIV-01/real-time-forum/internal/store"
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 type msg struct {
-	Action string      `json:"action"`
-	User   *model.User `json:"user"`
+	Status   string        `json:"status"`
+	UserInfo *ChatUserInfo `json:"user_info"`
 }
 type guest struct {
 	user *model.User
@@ -31,11 +34,12 @@ func (s *server) monitorDeleteGuestChan() {
 				delete(s.guests, userID)
 				continue
 			}
-			guest.ch <- &msg{"offline", dGuest.user}
+			guest.ch <- &msg{"offline", &ChatUserInfo{User: dGuest.user}}
 		}
 		s.mu.Unlock()
 	}
 }
+
 func (g *guest) monitorClient(del chan *guest) {
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
@@ -97,31 +101,64 @@ func (s *server) chatWsHandler(w http.ResponseWriter, r *http.Request) {
 		ch:   make(chan *msg, 10),
 	}
 
-	allusers, err := s.store.User().GetUsers(user.ID)
+	chatUserInfos, err := getAllUsers(user.ID, s.store)
 	if err != nil {
 		s.error(w, http.StatusInternalServerError, err)
 		return
 	}
-	fmt.Println(allusers)
-	s.mu.Lock()
 
-	for _, u := range allusers {
-		if gu, ok := s.guests[u.ID]; ok {
-			gu.ch <- &msg{"online", g.user}
-			g.sendMessage(&msg{"online", u})
+	s.mu.Lock()
+	for _, cui := range chatUserInfos {
+		if gu, ok := s.guests[cui.User.ID]; ok {
+			gu.ch <- &msg{"online", &ChatUserInfo{User: g.user}}
+			g.sendMessage(&msg{"online", cui})
 		} else {
-			g.sendMessage(&msg{"offline", u})
+			g.sendMessage(&msg{"offline", cui})
 		}
 	}
 	s.guests[g.user.ID] = g
 	s.mu.Unlock()
-	// s.mu.Lock()
-	// for _, gu := range s.guests {
-	// 	// g.sendMessage(&msg{"add", gu.user})
-	// 	gu.ch <- &msg{"add", g.user}
-	// }
-
-	// s.mu.Unlock()
-
 	go g.monitorClient(s.deleteGuestChan)
+}
+
+//ChatUserInfo ...
+type ChatUserInfo struct {
+	Room        *model.Room `json:"room"`
+	User        *model.User `json:"user"`
+	LastMessage *time.Time  `json:"last_message"`
+}
+
+func getAllUsers(userID int, st store.Store) ([]*ChatUserInfo, error) {
+	users, err := st.User().GetAll()
+	if err != nil {
+		return nil, err
+	}
+	chatUserInfos := make([]*ChatUserInfo, 0)
+	for _, user := range users {
+		cui := &ChatUserInfo{
+			User: user,
+		}
+		chatUserInfos = append(chatUserInfos, cui)
+		room, err := st.Room().GetRoom(userID, user.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				continue
+			} else {
+				return nil, err
+			}
+		}
+		cui.Room = room
+		lastMessageTimestamp, err := st.Room().GetLastMessageTimestamp(room.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				continue
+			} else {
+				return nil, err
+			}
+		}
+		cui.LastMessage = lastMessageTimestamp
+
+	}
+
+	return chatUserInfos, nil
 }

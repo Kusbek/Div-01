@@ -42,7 +42,7 @@ func (u *User) EncryptPassword() error {
 func (u *User) ComparePasswords(password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
-		return errors.New("Passwords are not equal")
+		return errors.New("Incorrect Password")
 	}
 	return nil
 }
