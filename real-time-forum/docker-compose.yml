@@ -1,0 +1,8 @@
+version: "3"
+services:
+  api:
+    image: real-time-forum
+    build: .
+    restart: on-failure
+    ports: 
+      - "8080:8080"

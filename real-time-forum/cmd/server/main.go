@@ -9,7 +9,7 @@ import (
 func main() {
 
 	sqlO := &sqlstore.Options{
-		Address: "local.db",
+		Address: "./local.db",
 	}
 
 	st, err := sqlstore.Start(sqlO)

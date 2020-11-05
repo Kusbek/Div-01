@@ -3,6 +3,7 @@ package apiserver
 import (
 	"fmt"
 	"net/http"
+	"os"
 )
 
 //Options ...
@@ -12,8 +13,9 @@ type Options struct {
 
 //Run ....
 func (s *server) Run() error {
+	port := os.Getenv("PORT")
 	server := http.Server{
-		Addr:    ":8082",
+		Addr:    ":" + port,
 		Handler: s.mux,
 	}
 	fmt.Println("starting server at", server.Addr)
