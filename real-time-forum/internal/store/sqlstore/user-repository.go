@@ -31,7 +31,7 @@ func (ur *UserRepository) Create(user *model.User) error {
 
 	res, err := ur.store.db.Exec(
 		`INSERT INTO users (nickname, email, gender, first_name, last_name, password, age)
-		 VALUES($1,$2,$3,$4,$5,$6)`,
+		 VALUES($1,$2,$3,$4,$5,$6,$7)`,
 		user.Nickname,
 		user.Email,
 		user.Gender,
@@ -127,8 +127,8 @@ func (ur *UserRepository) Exists(nickname, email string) (bool, error) {
 }
 
 //GetAll ...
-func (ur *UserRepository) GetAll() ([]*model.User, error) {
-	rows, err := ur.store.db.Query(`SELECT id, nickname FROM users`)
+func (ur *UserRepository) GetAll(id int) ([]*model.User, error) {
+	rows, err := ur.store.db.Query(`SELECT id, nickname FROM users WHERE id!=$1`, id)
 	defer rows.Close()
 	if err != nil {
 		return nil, err

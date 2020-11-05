@@ -12,7 +12,7 @@ export default class CommentView {
             this.displayAuthor(author),
             this.displayText(text)
         )
-        this.parentElement.append(commentWrapper)
+        this.parentElement.prepend(commentWrapper)
     }
 
     displayText = (text) => {

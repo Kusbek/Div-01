@@ -235,22 +235,23 @@ export default class PostView {
         this.postsContainer = document.getElementById("posts-container")
     }
 
-    displayPost = (post) => {
+    displayPost = (post, newCommentHandler) => {
         const postWrapper = createElement("div", "post-wrapper")
         postWrapper.append(
-            this.displayPostContainer(post),
+            this.displayPostContainer(post,newCommentHandler),
             this.addCommentSection()
         )
         this.postsContainer.append(postWrapper)
     }
 
-    displayPostContainer = ({ title, text, author, nComments }) => {
+    displayPostContainer = ({ title, text, author, nComments }, newCommentHandler) => {
         const container = createElement("div", "post-container")
         this.postContainer = container
         const content = createElement("div", "post-content")
         content.append(
             this.displayTitle(title),
             this.displayText(text),
+            this.displayNewComment(newCommentHandler),
             this.displayCommentsCount(nComments)
         )
 
@@ -262,6 +263,22 @@ export default class PostView {
 
         container.append(additional, content)
         return container
+    }
+
+    displayNewComment = (newCommentHandler) => {
+        const wrapper = createElement("div", "new-comment-wrapper")
+        const input = createElement("input", "new-comment-input")
+        input.setAttribute("type", "text")
+        input.setAttribute("placeholder", "leave a comment")
+        const sendButton = createElement("button", "new-comment-button")
+        sendButton.textContent = "Send"
+
+        sendButton.addEventListener("click", (event) => {
+            newCommentHandler(input.value,this.commentSection.style.display)
+            input.value = ""
+        })
+        wrapper.append(input, sendButton)
+        return wrapper
     }
 
     displayTitle = (title) => {
@@ -338,11 +355,16 @@ export default class PostView {
 
 
     displayCommentSection = () => {
+        this.commentSection.innerHTML = ""
         this.commentSection.style.display = "block"
     }
 
     closeCommentSection = () => {
         this.commentSection.style.display = "none"
+        this.commentSection.innerHTML = ""
+    }
+
+    clearCommentSection = () => {
         this.commentSection.innerHTML = ""
     }
 }

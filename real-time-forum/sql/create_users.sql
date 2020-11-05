@@ -5,5 +5,6 @@ CREATE TABLE users (
     gender VARCHAR,
     first_name VARCHAR,
     last_name VARCHAR,
+    age INTEGER,
     password VARCHAR
 );

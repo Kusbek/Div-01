@@ -68,7 +68,7 @@ func (r *CreatePostParams) getParams(req *http.Request) error {
 func (s *server) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 	session, err := r.Cookie("session_id")
 	if err == http.ErrNoCookie {
-		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		s.error(w, http.StatusUnauthorized, errors.New("Not Authorized"))
 		return
 	}
 	user, err := s.cookies.Check(session.Value)

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -7,47 +8,49 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <title>Real Time Forum</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+      type="text/css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
     <div id="sidebar">
-      <div id="sign-buttons">
+      <div id="sign-buttons"></div>
+      <div id="user-info"></div>
+      <div id="post-filter">
+
       </div>
-      <div id="user-info">
-        <!-- <div>Nickname: kusbek</div>
-        <div>Fullname: Bekarys Kuspan</div>
-        <div>Age: 26</div>
-        <div>Email: kusbek1994@gmail.com</div>
-        <div>Gender: male</div> -->
-      </div>
-      <div class = "chat">
-        <!-- <div class = "chat-users" id="online-users"> 
-          <p>online - 5</p>
-          <div class="online chat-user">alemuser1</div>
-          <div class="online chat-user">alemuser2</div>
-          <div class="online chat-user">alemuser3</div>
-          <div class="online chat-user">alemuser4</div>
-          <div class="online chat-user">alemuser5</div>
-        </div>
-        <div class = "chat-users" id="offline-users">
-          <p>offline - 5</p>
-          <div class="offline chat-user">alemuser6</div>
-          <div class="offline chat-user">alemuser7</div>
-          <div class="offline chat-user">alemuser8</div>
-          <div class="offline chat-user">alemuser9</div>
-          <div class="offline chat-user">alemuser10</div>
-        </div> -->
+      <div class="chat">
+        <!-- <p style="font-size: 21px; margin-bottom: 5px">online</p> -->
+        <div class="chat-users" id="online-users"></div>
+        <!-- <p style="font-size: 21px; margin-bottom: 5px">offline</p> -->
+        <div class="chat-users" id="offline-users"></div>
       </div>
     </div>
-    <div id="wall"></div>
+    <div id="wall">
+      <div id="posts-container"></div>
+      <div id="room-container"></div>
+    </div>
     <div id="login-modal" class="modal">
       <div class="modal-content animate">
         <div class="imgcontainer">
           <span class="close">&times;</span>
         </div>
         <div class="container">
-          <input name = "username" type="text" placeholder="Enter Username" required/>
-          <input name = "password" type="password" placeholder="Enter Password" required/>
+          <input
+            name="username"
+            type="text"
+            placeholder="Enter Username or Email"
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Enter Password"
+            required
+          />
           <button>Login</button>
         </div>
       </div>
@@ -59,18 +62,78 @@
           <span class="close">&times;</span>
         </div>
         <div class="container">
-          <input name = "username" type="text" placeholder="Enter username" required/>
-          <input name = "email" type="text" placeholder="Enter email" required/>
-          <input name = "first-name" type="text" placeholder="Enter first name" required/>
-          <input name = "last-name" type="text" placeholder="Enter last name" required/>
-          <input name = "age" type="number" placeholder="Enter your age" required/>
-          <select name = "gender">
+          <input
+            name="username"
+            type="text"
+            placeholder="Enter username"
+            required
+          />
+          <input name="email" type="text" placeholder="Enter email" required />
+          <input
+            name="first-name"
+            type="text"
+            placeholder="Enter first name"
+            required
+          />
+          <input
+            name="last-name"
+            type="text"
+            placeholder="Enter last name"
+            required
+          />
+          <input
+            name="age"
+            type="number"
+            placeholder="Enter your age"
+            required
+          />
+          <select name="gender">
             <option value="male">Мужик</option>
             <option value="female">Не мужик</option>
           </select>
-          <input name = "password" type="password" placeholder="Enter password" required/>
-          <input name = "repeat-password" type="password" placeholder="Repeat password" required/>
+          <input
+            name="password"
+            type="password"
+            placeholder="Enter password"
+            required
+          />
+          <input
+            name="repeat-password"
+            type="password"
+            placeholder="Repeat password"
+            required
+          />
           <button>Sign In</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="create-post-modal" class="modal">
+      <div class="modal-content animate">
+        <div class="imgcontainer">
+          <span class="close">&times;</span>
+        </div>
+        <div class="container">
+          <input
+            name="title"
+            type="text"
+            placeholder="Enter title of post"
+            required
+          />
+          <select name="post-category" required>
+            <option value="game">Game</option>
+            <option value="movie">Movie</option>
+            <option value="news">News</option>
+          </select>
+          <br>
+          <br>
+          <textarea
+            name="post-text"
+            type="text"
+            placeholder="Enter body of your post"
+            required
+          ></textarea>
+          <button>Create post</button>
         </div>
       </div>
     </div>

@@ -190,4 +190,33 @@ export default class Post {
 
     }
 
+    sendNewComment = async (comment) => {
+        let body = {
+            post_id: this.id,
+            text: comment,
+        }
+        await fetch(`${this.commentURL}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(body)
+            // body:`post_id=${postId}&text=${text}`
+        }).then((response) => {
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 500) {
+                    return response.json()
+                }
+            }
+            return response.json()
+        }).then((json) => {
+            if (json.error != null || json.error != undefined) {
+                return Promise.reject(Error(json.error))
+            }
+        }).catch((e) => {
+            displayModal(e)
+        })
+    }
+
 }

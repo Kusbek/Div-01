@@ -122,6 +122,25 @@ func (rr *RoomRepository) DeleteRoom(id int) error {
 	return nil
 }
 
+//GetRoomUsers ...
+func (rr *RoomRepository) GetRoomUsers(roomID int) ([]*model.User, error) {
+	rows, err := rr.store.db.Query("SELECT id, nickname FROM users WHERE id in (SELECT user_id FROM room_participants WHERE room_id = $1)", roomID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	users := make([]*model.User, 0)
+	for rows.Next() {
+		user := &model.User{}
+		err := rows.Scan(&user.ID, &user.Nickname)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
 //NewMessage ...
 func (rr *RoomRepository) NewMessage(roomID int, m *model.Message) error {
 	_, err := rr.store.db.Exec(

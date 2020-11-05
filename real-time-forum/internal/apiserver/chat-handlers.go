@@ -14,10 +14,20 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type msg struct {
-	Status   string        `json:"status"`
-	UserInfo *ChatUserInfo `json:"user_info"`
+//ChatUserInfo ...
+type ChatUserInfo struct {
+	Room        *model.Room `json:"room"`
+	User        *model.User `json:"user"`
+	LastMessage *time.Time  `json:"last_message"`
 }
+type msg struct {
+	Status      string      `json:"status"`
+	Room        *model.Room `json:"room"`
+	User        *model.User `json:"user"`
+	LastMessage *time.Time  `json:"last_message"`
+	NewMessage  bool        `json:"new_message"`
+}
+
 type guest struct {
 	user *model.User
 	conn *websocket.Conn
@@ -30,11 +40,10 @@ func (s *server) monitorDeleteGuestChan() {
 		s.mu.Lock()
 		for userID, guest := range s.guests {
 			if guest == dGuest {
-				// s.guests = append(s.guests[:i], s.guests[i+1:]...)
 				delete(s.guests, userID)
 				continue
 			}
-			guest.ch <- &msg{"offline", &ChatUserInfo{User: dGuest.user}}
+			guest.ch <- &msg{Status: "offline", User: dGuest.user}
 		}
 		s.mu.Unlock()
 	}
@@ -76,7 +85,7 @@ func (g *guest) sendMessage(m *msg) {
 func (s *server) chatWsHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := r.Cookie("session_id")
 	if err == http.ErrNoCookie {
-		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		s.error(w, http.StatusUnauthorized, errors.New("Not Authorized"))
 		return
 	}
 	user, err := s.cookies.Check(session.Value)
@@ -110,10 +119,10 @@ func (s *server) chatWsHandler(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	for _, cui := range chatUserInfos {
 		if gu, ok := s.guests[cui.User.ID]; ok {
-			gu.ch <- &msg{"online", &ChatUserInfo{User: g.user}}
-			g.sendMessage(&msg{"online", cui})
+			gu.ch <- &msg{Status: "online", User: g.user}
+			g.sendMessage(&msg{Status: "online", User: cui.User, Room: cui.Room, LastMessage: cui.LastMessage})
 		} else {
-			g.sendMessage(&msg{"offline", cui})
+			g.sendMessage(&msg{Status: "offline", User: cui.User, Room: cui.Room, LastMessage: cui.LastMessage})
 		}
 	}
 	s.guests[g.user.ID] = g
@@ -121,15 +130,8 @@ func (s *server) chatWsHandler(w http.ResponseWriter, r *http.Request) {
 	go g.monitorClient(s.deleteGuestChan)
 }
 
-//ChatUserInfo ...
-type ChatUserInfo struct {
-	Room        *model.Room `json:"room"`
-	User        *model.User `json:"user"`
-	LastMessage *time.Time  `json:"last_message"`
-}
-
 func getAllUsers(userID int, st store.Store) ([]*ChatUserInfo, error) {
-	users, err := st.User().GetAll()
+	users, err := st.User().GetAll(userID)
 	if err != nil {
 		return nil, err
 	}

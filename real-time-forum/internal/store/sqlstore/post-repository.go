@@ -61,7 +61,7 @@ func (pr *PostRepository) GetAll() ([]*model.Post, error) {
 			return nil, err
 		}
 		post.Author = user
-		posts = append(posts, post)
+		posts = append([]*model.Post{post}, posts...)
 	}
 	return posts, nil
 }

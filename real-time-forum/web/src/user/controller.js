@@ -112,6 +112,10 @@ export default class UserController {
         this.view.bindSubmitSignUpInfo(this.handleSubmitSignUpInfo)
     }
 
+    getUser = () => {
+        return this.model.getUser()
+    }
+
     createUserInfo = () => {
         let user = this.model.getUser()
         if (user.isLoggedIn) {

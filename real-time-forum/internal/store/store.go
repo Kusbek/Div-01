@@ -22,6 +22,7 @@ type RoomRepository interface {
 	NewMessage(roomID int, m *model.Message) error
 	GetMessages(roomID int, from int) ([]*model.Message, error)
 	GetLastMessageTimestamp(roomID int) (*time.Time, error)
+	GetRoomUsers(roomID int) ([]*model.User, error)
 }
 
 //CommentRepository ...
@@ -45,6 +46,6 @@ type UserRepository interface {
 	Delete(id int) error
 	GetByID(id int) (*model.User, error)
 	Exists(nickname, email string) (bool, error)
-	GetAll() ([]*model.User, error)
+	GetAll(id int) ([]*model.User, error)
 	GetUsers(id int) ([]*model.User, error)
 }

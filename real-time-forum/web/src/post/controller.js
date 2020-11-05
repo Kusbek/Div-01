@@ -6,6 +6,8 @@
 //         this.postTemplateIsDisplayed = false
 //         this.displayPosts("all")
 
+import { displayModal } from "../utils/utils.js"
+
 
 
 //     }
@@ -109,7 +111,7 @@ export default class PostController {
     }
 
     displayPost = () => {
-        this.view.displayPost(this.model.get())
+        this.view.displayPost(this.model.get(), this.handleNewComment)
     }
 
     handleCommentCountClick = (displayStatus) => {
@@ -129,6 +131,22 @@ export default class PostController {
         this.commentControllers.forEach((commentController)=>{
             commentController.displayComment()
         })
+    }
+
+    handleNewComment = (comment, displayStatus) => {
+        if (comment !== "" && comment !== undefined && comment !== null) {
+            if (displayStatus === "none") {
+                this.view.displayCommentSection()
+            }else {
+                this.view.clearCommentSection()
+            }
+            this.model.sendNewComment(comment).then(()=>{
+                this.model.getPostComments(this.view.commentSection).then((commentControllers)=> {
+                    this.commentControllers = commentControllers
+                    this.displayComments()
+                })
+            })
+        }
     }
 
 }

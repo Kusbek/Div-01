@@ -1,143 +1,95 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-      }
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+      type="text/css"
+      rel="stylesheet"
+    />
 
-      /* Full-width input fields */
-      input[type="text"],
-      input[type="password"] {
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid rgb(97, 97, 97);
-        box-sizing: border-box;
-      }
-
-      /* Set a style for all buttons */
-      button {
-        background-color: #a2ccb6;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-      }
-
-      button:hover {
-        opacity: 0.8;
-      }
-
-
-      /* Center the image and position the close button */
-      .imgcontainer {
-        text-align: center;
-        position: relative;
-        overflow:visible;
-      }
-      /* The Close Button (x) */
-      .close {
-        position: relative;
-        float: right;
-        right: 25px;
-        top: 0;
-        color: #000;
-        font-size: 35px;
-        font-weight: bold;
-      }
-
-      .container {
-        padding: 16px;
-      }
-
-      span.psw {
-        float: right;
-        padding-top: 16px;
-      }
-
-      /* The Modal (background) */
-      .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0, 0, 0); /* Fallback color */
-        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-        padding-top: 60px;
-      }
-
-      /* Modal Content/Box */
-      .modal-content {
-        background-color: #969696;
-        margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
-        border: 1px solid #888;
-        width: 20%; /* Could be more or less, depending on screen size */
-      }
-
-
-
-      .close:hover,
-      .close:focus {
-        color: #a2ccb6;
-        cursor: pointer;
-      }
-
-      /* Add Zoom Animation */
-      .animate {
-        -webkit-animation: animatezoom 0.6s;
-        animation: animatezoom 0.6s;
-      }
-
-      @-webkit-keyframes animatezoom {
-        from {
-          -webkit-transform: scale(0);
-        }
-        to {
-          -webkit-transform: scale(1);
-        }
-      }
-
-      @keyframes animatezoom {
-        from {
-          transform: scale(0);
-        }
-        to {
-          transform: scale(1);
-        }
-      }
-
-    </style>
+    <link
+    href="./test.css"
+    type="text/css"
+    rel="stylesheet"
+  />
   </head>
   <body>
-    <button
-      onclick="document.getElementById('login-modal').style.display='block'"
-      style="width: auto"
-    >
-      Login
-    </button>
-
-    <div id="login-modal" class="modal">
-      <div class="modal-content animate">
-        <div class="imgcontainer">
-          <span
-            onclick="document.getElementById('login-modal').style.display='none'"
-            class="close"
-            >&times;</span>
-        </div>
-
-        <div class="container">
-          <input type="text" placeholder="Enter Username" required/>
-          <input type="password" placeholder="Enter Password" required/>
-          <button>Login</button>
+    <div class="container">
+      <div class="messaging">
+        <div class="inbox_msg">
+          <div class="mesgs">
+            <div class="msg_history">
+              <div class="incoming_msg">
+                <div class="incoming_msg_img">
+                  <img
+                    src="https://ptetutorials.com/images/user-profile.png"
+                    alt="sunil"
+                  />
+                </div>
+                <div class="received_msg">
+                  <div class="received_withd_msg">
+                    <p>Test which is a new approach to have all solutions</p>
+                    <span class="time_date"> 11:01 AM | June 9</span>
+                  </div>
+                </div>
+              </div>
+              <div class="outgoing_msg">
+                <div class="sent_msg">
+                  <p>Test which is a new approach to have all solutions</p>
+                  <span class="time_date"> 11:01 AM | June 9</span>
+                </div>
+              </div>
+              <div class="incoming_msg">
+                <div class="incoming_msg_img">
+                  <img
+                    src="https://ptetutorials.com/images/user-profile.png"
+                    alt="sunil"
+                  />
+                </div>
+                <div class="received_msg">
+                  <div class="received_withd_msg">
+                    <p>Test, which is a new approach to have</p>
+                    <span class="time_date"> 11:01 AM | Yesterday</span>
+                  </div>
+                </div>
+              </div>
+              <div class="outgoing_msg">
+                <div class="sent_msg">
+                  <p>Apollo University, Delhi, India Test</p>
+                  <span class="time_date"> 11:01 AM | Today</span>
+                </div>
+              </div>
+              <div class="incoming_msg">
+                <div class="incoming_msg_img">
+                  <img
+                    src="https://ptetutorials.com/images/user-profile.png"
+                    alt="sunil"
+                  />
+                </div>
+                <div class="received_msg">
+                  <div class="received_withd_msg">
+                    <p>
+                      We work directly with our designers and suppliers, and
+                      sell direct to you, which means quality, exclusive
+                      products, at a price anyone can afford.
+                    </p>
+                    <span class="time_date"> 11:01 AM | Today</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="type_msg">
+              <div class="input_msg_write">
+                <input
+                  type="text"
+                  class="write_msg"
+                  placeholder="Type a message"
+                />
+                <button class="msg_send_btn" type="button">
+                  <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

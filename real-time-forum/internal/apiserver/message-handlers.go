@@ -19,6 +19,7 @@ type interlocutor struct {
 	room        store.RoomRepository
 	user        *model.User
 	conn        *websocket.Conn
+	guest       *guest
 }
 
 func (il *interlocutor) sendMessage(m *model.Message) {
@@ -72,7 +73,7 @@ func (s *server) handleGetMessages(w http.ResponseWriter, r *http.Request) {
 func (s *server) messageWsHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := r.Cookie("session_id")
 	if err == http.ErrNoCookie {
-		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		s.error(w, http.StatusUnauthorized, errors.New("Not Authorized"))
 		return
 	}
 	user, err := s.cookies.Check(session.Value)
@@ -102,24 +103,25 @@ func (s *server) messageWsHandler(w http.ResponseWriter, r *http.Request) {
 		room:        s.store.Room(),
 		user:        user,
 		conn:        conn,
+		guest:       s.guests[user.ID],
 	}
+
 	il.roomManager.mu.Lock()
 	il.roomManager.interlocutors = append(il.roomManager.interlocutors, il)
 	il.roomManager.mu.Unlock()
 	// for _, m := range messages {
 	// 	il.sendMessage(m, false)
 	// }
-	go il.monitorMessages(roomID)
+	go il.monitorMessages(roomID, s)
 }
 
-func (il *interlocutor) monitorMessages(roomID int) {
+func (il *interlocutor) monitorMessages(roomID int, s *server) {
 	fmt.Println(il.roomManager.interlocutors)
 	go func() {
 		for {
 			_, d, err := il.conn.ReadMessage()
 			if err != nil {
 				fmt.Println("Error reading message.", err)
-				fmt.Println(il.roomManager.interlocutors)
 				il.roomManager.mu.Lock()
 				for i, interlocutor := range il.roomManager.interlocutors {
 					if interlocutor == il {
@@ -133,19 +135,32 @@ func (il *interlocutor) monitorMessages(roomID int) {
 			in := &inMessage{}
 			json.Unmarshal(d, in)
 
-			msg := &model.Message{
+			m := &model.Message{
 				Timestamp: time.Now(),
 				User:      il.user,
 				Text:      in.Message,
 			}
 
-			err = il.room.NewMessage(roomID, msg)
+			err = il.room.NewMessage(roomID, m)
 			if err != nil {
 				fmt.Println("Error saving message.", err)
 				continue
 			}
 			for _, i := range il.roomManager.interlocutors {
-				i.sendMessage(msg)
+				i.sendMessage(m)
+			}
+
+			users, err := il.room.GetRoomUsers(roomID)
+
+			for _, user := range users {
+				if user.ID != il.user.ID {
+					updMsg := &msg{User: user, LastMessage: &m.Timestamp}
+					il.guest.sendMessage(updMsg)
+					g, ok := s.guests[user.ID]
+					if ok {
+						g.sendMessage(&msg{User: il.user, Status: "online", LastMessage: &m.Timestamp, NewMessage: true})
+					}
+				}
 			}
 		}
 
@@ -165,4 +180,14 @@ func (il *interlocutor) monitorMessages(roomID int) {
 	// 	}
 	// }()
 
+}
+
+//MyPrint ...
+func MyPrint(data interface{}) {
+	b, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	fmt.Print(string(b))
+	fmt.Println()
 }

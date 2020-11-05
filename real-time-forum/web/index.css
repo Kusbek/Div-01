@@ -137,6 +137,31 @@ body {
   cursor: pointer;
 }
 
+.new-comment-wrapper {
+  width: 80%;
+  font-size: 0.9em;
+  position: absolute;
+  bottom: 0.1rem;
+  right: 6rem;
+}
+
+.new-comment-input {
+  width: 80%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(97, 97, 97);
+  box-sizing: border-box;
+
+  /* float: left; */
+
+}
+.new-comment-button {
+  padding: 13px;
+  width: 15%;
+  /* float: right; */
+}
+
 .post-wrapper .comment-section {
   background-color: #fff;
   float: right;
@@ -179,10 +204,14 @@ body {
   padding: 1px;
 }
 
-#wall {
+#posts-container {
   height: 100vh;
   overflow-y: scroll;
-  float: right;
+  float: left;
+}
+#posts-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* make scrollbar transparent */
 }
 
 #sidebar {
@@ -209,6 +238,26 @@ body {
   cursor: pointer;
 }
 
+#post-filter {
+  margin-bottom: 0.4rem;
+  clear: both;
+}
+
+#post-filter .post-category {
+  border-radius: 3px;
+  padding: 0.2rem;
+  margin: 0.5rem;
+}
+
+#post-filter button {
+  background-color: rgb(102, 102, 102);
+}
+
+#post-filter button:hover {
+  background-color: rgb(148, 148, 148);
+  cursor: pointer;
+}
+
 #user-info {
   width: 100%;
   background-color: #8a8a8a;
@@ -221,7 +270,12 @@ body {
 }
 
 .chat {
+  height: 76.5vh;
   overflow-y: scroll;
+}
+.chat::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* make scrollbar transparent */
 }
 
 .chat .chat-users p {
@@ -234,14 +288,25 @@ body {
 }
 
 /* Full-width input fields */
-input[type="text"],
-input[type="password"] {
+.modal input[type="text"],
+.modal input[type="password"] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
   border: 1px solid rgb(97, 97, 97);
   box-sizing: border-box;
+}
+
+.modal textarea[type="text"]{
+  width: 100%;
+  height: 15em;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(97, 97, 97);
+  box-sizing: border-box;
+  resize: none;
 }
 
 /* Set a style for all buttons */
@@ -336,4 +401,108 @@ span.psw {
   to {
     transform: scale(1);
   }
+}
+
+.room {
+  height: 90vh;
+  background-color: rgb(161, 161, 161);
+  float: left;
+  padding: 30px 25px 30px 25px;
+  width: 60%;
+}
+
+.msg-history {
+  height: 95%;
+  overflow-y: auto;
+}
+
+.msg-history::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* make scrollbar transparent */
+}
+.type-msg {
+  border-top: 1px solid #c4c4c4;
+  position: relative;
+}
+
+.input-msg-write input {
+  margin: 0px;
+  background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+  border: medium none;
+  color: #4c4c4c;
+  font-size: 15px;
+  min-height: 48px;
+  width: 95%;
+}
+
+.msg-send-btn {
+  border: medium none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  font-size: 17px;
+  height: 33px;
+  position: absolute;
+  right: 0;
+  top: 11px;
+  width: 33px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.incoming_msg_img {
+  display: inline-block;
+  width: 6%;
+}
+.received_msg {
+  display: inline-block;
+  vertical-align: top;
+  width: 92%;
+}
+.received_withd_msg p {
+  background: #ebebeb none repeat scroll 0 0;
+  border-radius: 3px;
+  color: #646464;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px 10px 5px 12px;
+  width: 100%;
+}
+.time_date {
+  color: #747474;
+  display: block;
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+.received_withd_msg {
+  width: 57%;
+}
+.sent_msg p {
+  background: #a2ccb6 none repeat scroll 0 0;
+  border-radius: 3px;
+  font-size: 14px;
+  margin: 0;
+  color: #fff;
+  padding: 5px 10px 5px 12px;
+  width: 100%;
+}
+.outgoing_msg {
+  overflow-wrap: break-word;
+  margin: 26px 0 26px;
+}
+.sent_msg {
+  width: 46%;
+}
+
+img {
+  max-width: 100%;
+}
+
+.header {
+  font-size: 21px;
+  margin-bottom: 5px;
+}
+
+.new-message {
+  background-color: rgb(160, 248, 138);
 }

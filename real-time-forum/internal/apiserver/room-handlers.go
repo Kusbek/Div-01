@@ -28,7 +28,7 @@ var roomCount = 0
 func (s *server) handleGetRoom(w http.ResponseWriter, r *http.Request) {
 	session, err := r.Cookie("session_id")
 	if err == http.ErrNoCookie {
-		s.error(w, http.StatusUnauthorized, errors.New("No cookie"))
+		s.error(w, http.StatusUnauthorized, errors.New("Not Authorized"))
 		return
 	}
 	user, err := s.cookies.Check(session.Value)
@@ -57,11 +57,16 @@ func (s *server) handleGetRoom(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-
-	if _, ok := s.rooms[room.ID]; !ok {
-		s.rooms[room.ID] = &roomManager{ID: room.ID, interlocutors: make([]*interlocutor, 0), mu: &sync.Mutex{}}
-	}
+	s.addRoomManager(room.ID)
 	s.respond(w, http.StatusOK, map[string]interface{}{
 		"room": room,
 	})
+}
+
+func (s *server) addRoomManager(id int) {
+	s.mu.Lock()
+	if _, ok := s.rooms[id]; !ok {
+		s.rooms[id] = &roomManager{ID: id, interlocutors: make([]*interlocutor, 0), mu: &sync.Mutex{}}
+	}
+	s.mu.Unlock()
 }
