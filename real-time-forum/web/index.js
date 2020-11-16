@@ -127,6 +127,9 @@ class MainModel {
                 if (response.status == 401) {
                     return response.json()
                 }
+                if (response.status == 400) {
+                    return response.json()
+                }
                 return Promise.reject(Error(response.statusText))
             }
             return response.json()

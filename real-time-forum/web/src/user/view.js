@@ -121,6 +121,7 @@ export default class UserView {
             }
 
             let correctNickname = validateNickname(info.nickname)
+            console.log(correctNickname)
             if (!correctNickname) {
                 displayModal("Incorrect nickname, nickname should have only latin symbols, with min 5 and max 20 symbols")
                 return 
@@ -140,7 +141,8 @@ export default class UserView {
                 displayModal("Incorrect last name")
                 return 
             }
-            handler(info)
+            
+            // handler(info)
         })
     }
 

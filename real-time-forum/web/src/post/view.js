@@ -301,6 +301,7 @@ export default class PostView {
     }
 
     displayAuthorDetailed = (author) => {
+        console.log(author)
         //detailed
         const detailedInfo = createElement("div", "detailed-info")
 

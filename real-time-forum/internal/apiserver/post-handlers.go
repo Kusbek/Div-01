@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func (s *server) handlePosts(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +92,11 @@ func (s *server) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		Title:    d.Title,
 		Text:     d.Text,
 		Category: d.Category,
+	}
+
+	if strings.Trim(newPost.Title, " ") == "" || strings.Trim(newPost.Text, " ") == "" {
+		s.error(w, http.StatusBadRequest, errors.New("no empty values"))
+		return
 	}
 
 	err = s.store.Post().Create(newPost)

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (s *server) handleComments(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +92,11 @@ func (s *server) handleCreateComment(w http.ResponseWriter, r *http.Request) {
 			Nickname: user.Nickname,
 		},
 		Text: d.Text,
+	}
+
+	if strings.Trim(comment.Text, " ") == "" {
+		s.error(w, http.StatusBadRequest, errors.New("no empty values"))
+		return
 	}
 
 	err = s.store.Comment().Create(comment)

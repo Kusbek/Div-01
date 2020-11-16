@@ -50,7 +50,7 @@ export const formatDate = (timestamp) => {
 
 
 export const validateNickname = (nickname) => {
-    if (nickname.length < 5 && nickname.length > 20) {
+    if (nickname.length < 5 || nickname.length > 19) {
         return false
     }
     let re = new RegExp(/^[a-zA-Z0-9]+$/, "g")
@@ -71,7 +71,7 @@ export const validateEmail = (email) => {
 
 
 export const validateName = (name) => {
-    if (name.length < 1 && name.length > 20) {
+    if (name.length < 1 || name.length > 20) {
         return false
     }
     let re = new RegExp(/^[a-zA-Z]+$/, "g")

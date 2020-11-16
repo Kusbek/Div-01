@@ -69,7 +69,7 @@ func (pr *PostRepository) GetAll() ([]*model.Post, error) {
 //Get ...
 func (pr *PostRepository) Get(category string) ([]*model.Post, error) {
 	rows, err := pr.store.db.Query(`
-		SELECT posts.id, users.id, users.nickname, posts.title, posts.post_text, posts.comments FROM posts
+		SELECT posts.id, users.id, users.nickname, users.email, users.first_name, users.last_name, users.gender,  posts.title, posts.post_text, posts.comments FROM posts
 		LEFT JOIN users ON posts.author_id = users.id
 		WHERE posts.category = $1
 		`, category)
@@ -85,6 +85,10 @@ func (pr *PostRepository) Get(category string) ([]*model.Post, error) {
 			&post.ID,
 			&user.ID,
 			&user.Nickname,
+			&user.Email,
+			&user.FirstName,
+			&user.LastName,
+			&user.Gender,
 			&post.Title,
 			&post.Text,
 			&post.Comments,
