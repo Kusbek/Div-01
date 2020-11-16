@@ -63,7 +63,6 @@ export default class ChatController {
             let guest = new GuestController(new Guest(data), new GuestView(), this.createRoom)
             this.guests.push(guest)
         }else {
-            console.log(data)
             existingGuest.update(data)
         }
         this.updateChat()

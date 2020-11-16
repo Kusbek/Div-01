@@ -2,7 +2,7 @@
 
 export default class Chat {
     constructor() {
-        this.wsUrl = "ws://localhost:8080/chat"
+        this.wsUrl = "ws://"+location.host+"/chat"
     }
 
     // monitorGuestsInServer(newGuestHandler, updateState) {

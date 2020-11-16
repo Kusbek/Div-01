@@ -46,3 +46,37 @@ export const formatDate = (timestamp) => {
     let seconds = date.getSeconds()>9?date.getSeconds():`0${date.getSeconds()}`
     return `${date.getDate()} ${month[date.getMonth()]} ${date.getHours()}:${date.getMinutes()}:${seconds}`
 }
+
+
+
+export const validateNickname = (nickname) => {
+    if (nickname.length < 5 && nickname.length > 20) {
+        return false
+    }
+    let re = new RegExp(/^[a-zA-Z0-9]+$/, "g")
+    if (!nickname.match(re)) {
+        return false
+    }
+    return true
+}
+
+
+export const validateEmail = (email) => {
+    let re = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/, "g")
+    if (re.test(email)) {
+        return true
+    }
+    return false
+}
+
+
+export const validateName = (name) => {
+    if (name.length < 1 && name.length > 20) {
+        return false
+    }
+    let re = new RegExp(/^[a-zA-Z]+$/, "g")
+    if (!re.test(name)) {
+        return false
+    }
+    return true
+}

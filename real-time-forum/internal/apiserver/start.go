@@ -14,6 +14,9 @@ type Options struct {
 //Run ....
 func (s *server) Run() error {
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	server := http.Server{
 		Addr:    ":" + port,
 		Handler: s.mux,

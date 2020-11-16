@@ -1,4 +1,4 @@
-import { createElement, displayModal } from '../utils/utils.js'
+import { createElement, displayModal, validateNickname, validateEmail, validateName } from '../utils/utils.js'
 
 export default class UserView {
     constructor() {
@@ -118,6 +118,27 @@ export default class UserView {
                 last_name: modal.querySelector('input[name="last-name"]').value,
                 age: parseInt(modal.querySelector('input[name="age"]').value),
                 gender: modal.querySelector('select[name="gender"]').value,
+            }
+
+            let correctNickname = validateNickname(info.nickname)
+            if (!correctNickname) {
+                displayModal("Incorrect nickname, nickname should have only latin symbols, with min 5 and max 20 symbols")
+                return 
+            }
+            let correctEmail = validateEmail(info.email)
+            if (!correctEmail) {
+                displayModal("Incorrect email")
+                return 
+            }
+            let correctFirstName = validateName(info.first_name)
+            if (!correctFirstName) {
+                displayModal("Incorrect first name")
+                return 
+            }
+            let correctLastName = validateName(info.last_name)
+            if (!correctLastName) {
+                displayModal("Incorrect last name")
+                return 
             }
             handler(info)
         })

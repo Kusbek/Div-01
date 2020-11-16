@@ -58,7 +58,7 @@ export default class Room {
     constructor({ id }) {
         this.id = id
         this.next = 0
-        this.wsUrl = "ws://localhost:8080/message"
+        this.wsUrl = "ws://"+location.host+"/message"
         this.msgUrl = "/messages"
     }
 

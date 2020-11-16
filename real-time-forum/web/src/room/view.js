@@ -95,6 +95,7 @@ export default class RoomView {
 
     constructor() {
         this.roomContainer = document.getElementById("room-container")
+
     }
 
 
@@ -112,7 +113,8 @@ export default class RoomView {
         const msgHistory = createElement("div", "msg-history")
         this.msgHistory = msgHistory
         msgHistory.addEventListener('scroll', (event) => {
-            if (msgHistory.scrollTop == 0) {
+            console.log(event)
+            if (msgHistory.scrollTop == 0 ) {
                 getOldMessages()
             }
         })

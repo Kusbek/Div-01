@@ -54,10 +54,10 @@ class MainView {
 
     displayCreatePostButton = () => {
         const postFilter = document.getElementById("post-filter")
-        const button = createElement("button","post-category")
+        const button = createElement("button", "post-category")
         button.id = "create-post"
         button.textContent = "Create post"
-        button.addEventListener("click", () =>{
+        button.addEventListener("click", () => {
             this.showCreatePostTemplate()
         })
         this.createPostButton = button
@@ -67,8 +67,9 @@ class MainView {
     }
 
     removeCreatePostButton = () => {
-        if (this.createPostButton !== undefined){
-        this.createPostButton.remove()}
+        if (this.createPostButton !== undefined) {
+            this.createPostButton.remove()
+        }
     }
 
     showCreatePostTemplate = () => {
@@ -85,13 +86,13 @@ class MainView {
             modal = this.modal
         }
         modal.style.display = "none"
-        
+
     }
 
     bindCreatePostSubmit = (handler) => {
         const modal = document.getElementById("create-post-modal")
         let submit = modal.querySelector("button")
-        submit.addEventListener("click", ()=> {
+        submit.addEventListener("click", () => {
             let info = {
                 title: modal.querySelector('input[name="title"]').value,
                 text: modal.querySelector('textarea[name="post-text"]').value,
@@ -112,14 +113,14 @@ class MainModel {
     async createPostInServer(body) {
         let jsonBody = {
             title: body.title,
-            text : body.text,
+            text: body.text,
             category: body.category,
         }
         const newPost = await fetch(`${this.postURL}`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
-              },
+            },
             body: JSON.stringify(jsonBody)
         }).then((response) => {
             if (!response.ok) {
@@ -199,12 +200,12 @@ class MainController {
         this.view.bindCreatePostSubmit(this.handleCreatePost)
         this.auth()
         this.getPosts("all")
-        this.chatController = new ChatController(new Chat(), new ChatView(),this.createRoom)
+        this.chatController = new ChatController(new Chat(), new ChatView(), this.createRoom)
         this.roomController = undefined
     }
 
     handleCreatePost = (body) => {
-        this.model.createPostInServer(body).then(()=>{
+        this.model.createPostInServer(body).then(() => {
             this.getPosts("all")
         })
     }
@@ -214,13 +215,16 @@ class MainController {
         this.userController.createUserInfo()
         this.updateCreatePostButton()
         this.updateChat()
+        if (this.roomController !== undefined && this.roomController !== null) {
+            this.closeRoom()
+        }
     }
 
     updateCreatePostButton = () => {
         let user = this.userController.model.getUser()
         if (user.isLoggedIn) {
             this.view.displayCreatePostButton()
-        }else {
+        } else {
             this.view.removeCreatePostButton()
         }
     }
