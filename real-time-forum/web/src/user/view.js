@@ -142,7 +142,7 @@ export default class UserView {
                 return 
             }
             
-            // handler(info)
+            handler(info)
         })
     }
 
