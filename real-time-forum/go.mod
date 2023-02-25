@@ -11,6 +11,6 @@ require (
 	github.com/lithammer/shortuuid v3.0.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.4
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
+	golang.org/x/crypto v0.1.0
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
